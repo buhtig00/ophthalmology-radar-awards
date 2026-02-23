@@ -69,7 +69,7 @@ export default function HeroSection() {
             </Button>
           </Link>
           <Link to={createPageUrl("SubmitCase")}>
-            <Button size="lg" variant="outline" className="border-white/10 text-white hover:bg-white/5 px-8 h-12 text-base">
+            <Button size="lg" variant="outline" className="border-white/10 text-black hover:bg-white/5 px-8 h-12 text-base">
               Enviar Caso Clínico
             </Button>
           </Link>
