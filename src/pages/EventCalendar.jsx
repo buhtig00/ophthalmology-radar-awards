@@ -169,28 +169,28 @@ END:VEVENT
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Calendar className="w-7 h-7 text-[#C9A227]" />
-          <h1 className="text-3xl font-bold text-white">Calendario del Evento</h1>
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+          <Calendar className="w-6 h-6 sm:w-7 sm:h-7 text-[#C9A227]" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Calendario del Evento</h1>
         </div>
-        <p className="text-gray-400">
+        <p className="text-sm sm:text-base text-gray-400">
           Todas las fechas clave del Ophthalmology Radar Awards 2026
         </p>
       </div>
 
       {/* Download All Button */}
-      <div className="mb-6 flex flex-wrap gap-3">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
         <Button
           onClick={downloadAllEvents}
-          className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold"
+          className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold w-full sm:w-auto"
         >
           <Download className="w-4 h-4 mr-2" />
-          Descargar Todas las Fechas (.ics)
+          <span className="text-sm sm:text-base">Descargar Todas las Fechas (.ics)</span>
         </Button>
-        <p className="text-gray-500 text-sm flex items-center">
+        <p className="text-gray-500 text-xs sm:text-sm">
           Compatible con Google Calendar, Outlook, Apple Calendar y más
         </p>
       </div>
@@ -205,7 +205,7 @@ END:VEVENT
           return (
             <div
               key={event.key}
-              className={`relative p-6 rounded-2xl border transition-all ${
+              className={`relative p-4 sm:p-6 rounded-2xl border transition-all ${
                 status === "today"
                   ? "border-[#C9A227] bg-[#C9A227]/5"
                   : status === "past"
@@ -213,20 +213,20 @@ END:VEVENT
                   : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04]"
               }`}
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-3 sm:gap-4">
                 {/* Icon */}
-                <div className={`p-3 rounded-xl ${event.bg} flex-shrink-0`}>
-                  <Icon className={`w-6 h-6 ${event.color}`} />
+                <div className={`p-2 sm:p-3 rounded-xl ${event.bg} flex-shrink-0`}>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${event.color}`} />
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-4 mb-2">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-2">
+                    <div className="flex-1">
+                      <h3 className="text-base sm:text-lg font-semibold text-white mb-1">
                         {event.label}
                       </h3>
-                      <p className="text-gray-400 text-sm">{event.description}</p>
+                      <p className="text-gray-400 text-xs sm:text-sm">{event.description}</p>
                     </div>
                     {status === "today" && (
                       <Badge className="bg-[#C9A227] text-black font-semibold">
@@ -246,13 +246,15 @@ END:VEVENT
                   </div>
 
                   {/* Date */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <span className="text-white font-medium">
-                      {format(dateObj, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
-                    </span>
-                    <span className="text-gray-500">•</span>
-                    <span className="text-gray-400">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 sm:mb-4">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
+                      <span className="text-white font-medium text-xs sm:text-base">
+                        {format(dateObj, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
+                      </span>
+                    </div>
+                    <span className="text-gray-500 hidden sm:inline">•</span>
+                    <span className="text-gray-400 text-xs sm:text-base ml-6 sm:ml-0">
                       {format(dateObj, "HH:mm")}
                     </span>
                   </div>
@@ -262,23 +264,24 @@ END:VEVENT
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/5"
+                      className="border-white/10 text-white hover:bg-white/5 text-xs sm:text-sm"
                       onClick={() => {
                         const ics = generateICS(event.key, event.date, event.description, event.label);
                         downloadICS(`${event.key}.ics`, ics);
                       }}
                     >
-                      <Download className="w-3.5 h-3.5 mr-1.5" />
+                      <Download className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
                       .ics
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/5"
+                      className="border-white/10 text-white hover:bg-white/5 text-xs sm:text-sm"
                       onClick={() => addToGoogleCalendar(event.date, event.label, event.description)}
                     >
-                      <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                      Google Calendar
+                      <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Google Calendar</span>
+                      <span className="sm:hidden">Google</span>
                     </Button>
                   </div>
                 </div>
@@ -294,12 +297,12 @@ END:VEVENT
       </div>
 
       {/* Info Box */}
-      <div className="mt-8 p-6 rounded-2xl border border-blue-500/20 bg-blue-500/5">
+      <div className="mt-6 sm:mt-8 p-4 sm:p-6 rounded-2xl border border-blue-500/20 bg-blue-500/5">
         <div className="flex gap-3">
-          <Calendar className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-white font-semibold mb-1">Sincronización Automática</h4>
-            <p className="text-gray-400 text-sm">
+            <h4 className="text-white font-semibold mb-1 text-sm sm:text-base">Sincronización Automática</h4>
+            <p className="text-gray-400 text-xs sm:text-sm">
               Al añadir los eventos a tu calendario personal, recibirás notificaciones automáticas según 
               tus preferencias configuradas en tu perfil. Puedes gestionar qué notificaciones recibir desde 
               la sección "Mi Perfil".

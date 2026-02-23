@@ -96,16 +96,16 @@ export default function BuyTicket() {
   const vipPrice = (eventConfig?.vip_price_cents || 15000) / 100;
 
   return (
-    <div className="p-6 sm:p-8 max-w-6xl mx-auto">
-      <div className="mb-10 text-center">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+      <div className="mb-8 sm:mb-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl font-bold text-white mb-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
             Pases para la Gala
           </h1>
-          <p className="text-gray-400 text-lg mb-2">
+          <p className="text-gray-400 text-sm sm:text-base lg:text-lg mb-2">
             Ophthalmology Radar Awards 2026
           </p>
           {eventConfig?.event_date && (
@@ -116,7 +116,7 @@ export default function BuyTicket() {
         </motion.div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
         {/* Streaming Pass */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}

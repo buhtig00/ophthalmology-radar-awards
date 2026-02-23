@@ -37,13 +37,13 @@ export default function Categories() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-6xl mx-auto">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white mb-2">Categorías</h1>
-        <p className="text-gray-400">Explora todas las especialidades de los premios</p>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+      <div className="mb-8 lg:mb-10">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Categorías</h1>
+        <p className="text-sm sm:text-base text-gray-400">Explora todas las especialidades de los premios</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {categories.map((cat, i) => (
           <motion.div
             key={cat.id}
@@ -56,7 +56,7 @@ export default function Categories() {
               className="group block rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-[#c9a84c]/20 transition-all duration-300 overflow-hidden"
             >
               {cat.image_url && (
-                <div className="h-40 overflow-hidden">
+                <div className="h-32 sm:h-40 overflow-hidden">
                   <img
                     src={cat.image_url}
                     alt={cat.name}
@@ -64,7 +64,7 @@ export default function Categories() {
                   />
                 </div>
               )}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="flex items-start justify-between mb-3">
                   <div className="text-2xl">{CATEGORY_ICONS[cat.name] || "🏆"}</div>
                   <span className="text-xs text-gray-500 bg-white/5 px-2.5 py-1 rounded-full">

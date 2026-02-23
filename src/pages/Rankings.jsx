@@ -52,17 +52,17 @@ export default function Rankings() {
   const medalColors = ["text-yellow-400", "text-gray-300", "text-amber-600"];
 
   return (
-    <div className="p-6 sm:p-8 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <BarChart3 className="w-7 h-7 text-[#c9a84c]" />
-          <h1 className="text-3xl font-bold text-white">Rankings</h1>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2">
+          <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-[#c9a84c]" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Rankings</h1>
         </div>
-        <p className="text-gray-400">Clasificación en tiempo real de las votaciones</p>
+        <p className="text-sm sm:text-base text-gray-400">Clasificación en tiempo real de las votaciones</p>
       </div>
 
       {/* Category Filter */}
-      <div className="mb-8 overflow-x-auto pb-2">
+      <div className="mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="flex gap-2 min-w-max">
           <button
             onClick={() => setSelectedCategory("all")}
@@ -107,30 +107,30 @@ export default function Rankings() {
                 transition={{ delay: index * 0.04 }}
                 className="rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
               >
-                <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`} className="block p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 text-center">
+                <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`} className="block p-3 sm:p-4">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <div className="w-6 sm:w-8 text-center flex-shrink-0">
                       {index < 3 ? (
-                        <Medal className={`w-5 h-5 mx-auto ${medalColors[index]}`} />
+                        <Medal className={`w-4 h-4 sm:w-5 sm:h-5 mx-auto ${medalColors[index]}`} />
                       ) : (
-                        <span className="text-gray-500 text-sm font-medium">{index + 1}</span>
+                        <span className="text-gray-500 text-xs sm:text-sm font-medium">{index + 1}</span>
                       )}
                     </div>
                     <img
                       src={finalist.photo_url || `https://ui-avatars.com/api/?name=${finalist.name}&background=c9a84c&color=0a0e1a&size=40`}
                       alt={finalist.name}
-                      className="w-10 h-10 rounded-lg object-cover"
+                      className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-white font-medium text-sm truncate hover:text-[#c9a84c] transition-colors">{finalist.name}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                        <span className="text-white font-medium text-xs sm:text-sm truncate hover:text-[#c9a84c] transition-colors">{finalist.name}</span>
                         {category && (
-                          <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full hidden sm:inline">
+                          <span className="text-[10px] sm:text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full inline-block w-fit">
                             {category.name}
                           </span>
                         )}
                       </div>
-                      <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                      <div className="relative h-1.5 sm:h-2 bg-white/5 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${percent}%` }}
@@ -139,9 +139,11 @@ export default function Rankings() {
                         />
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-white font-semibold">{finalist.vote_count || 0}</span>
-                      <span className="text-gray-500 text-xs ml-1">votos</span>
+                    <div className="text-right flex-shrink-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1">
+                        <span className="text-white font-semibold text-sm sm:text-base">{finalist.vote_count || 0}</span>
+                        <span className="text-gray-500 text-[10px] sm:text-xs">votos</span>
+                      </div>
                     </div>
                   </div>
                 </Link>
