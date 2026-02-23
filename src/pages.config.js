@@ -61,6 +61,7 @@ import Rankings from './pages/Rankings';
 import SubmitCase from './pages/SubmitCase';
 import Voting from './pages/Voting';
 import JuryEvaluation from './pages/JuryEvaluation';
+import CaseGallery from './pages/CaseGallery';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "SubmitCase": SubmitCase,
     "Voting": Voting,
     "JuryEvaluation": JuryEvaluation,
+    "CaseGallery": CaseGallery,
 }
 
 export const pagesConfig = {

@@ -16,6 +16,7 @@ import {
 
 const NAV_ITEMS = [
   { name: "Inicio", page: "Home", icon: Home },
+  { name: "Galería", page: "CaseGallery", icon: Award },
   { name: "Categorías", page: "Categories", icon: Award },
   { name: "Votar", page: "Voting", icon: Vote },
   { name: "Rankings", page: "Rankings", icon: BarChart3 },
