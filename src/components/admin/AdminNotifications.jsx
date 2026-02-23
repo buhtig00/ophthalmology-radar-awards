@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Mail, Send, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import { notificationService } from "@/lib/notificationService";
+import { notificationService } from "@/components/NotificationService";
 
 const NOTIFICATION_TYPES = [
   { key: "voting_start", label: "Inicio de Votación", description: "Notificar que la votación ha comenzado" },
