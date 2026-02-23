@@ -73,6 +73,12 @@ ${caseData.video_url ? `\n🎥 [Ver Video](${caseData.video_url})` : ''}
 
             const issue = await issueResponse.json();
 
+            // Update case with GitHub info
+            await base44.asServiceRole.entities.Case.update(caseData.id, {
+                github_issue_number: issue.number,
+                github_issue_url: issue.html_url
+            });
+
             // Add issue to project
             const addToProjectMutation = `
                 mutation($projectId: ID!, $contentId: ID!) {
