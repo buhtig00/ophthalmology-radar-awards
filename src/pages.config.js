@@ -59,6 +59,7 @@ import SubmitCase from './pages/SubmitCase';
 import Voting from './pages/Voting';
 import BuyTicket from './pages/BuyTicket';
 import LiveStream from './pages/LiveStream';
+import EventCalendar from './pages/EventCalendar';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "Voting": Voting,
     "BuyTicket": BuyTicket,
     "LiveStream": LiveStream,
+    "EventCalendar": EventCalendar,
 }
 
 export const pagesConfig = {

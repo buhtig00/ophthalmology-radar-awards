@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
   Home, Award, Vote, Upload, BarChart3, Settings,
-  Menu, X, Eye, ChevronRight, LogOut, User
+  Menu, X, Eye, ChevronRight, LogOut, User, Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { name: "Categorías", page: "Categories", icon: Award },
   { name: "Votar", page: "Voting", icon: Vote },
   { name: "Rankings", page: "Rankings", icon: BarChart3 },
+  { name: "Calendario", page: "EventCalendar", icon: Calendar },
   { name: "Enviar Caso", page: "SubmitCase", icon: Upload },
   { name: "Pases", page: "BuyTicket", icon: Eye },
   { name: "Mi Perfil", page: "Profile", icon: User },
