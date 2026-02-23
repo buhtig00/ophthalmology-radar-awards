@@ -14,6 +14,7 @@ import AdminEventDates from "@/components/admin/AdminEventDates";
 import AdminExport from "@/components/admin/AdminExport";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminTickets from "@/components/admin/AdminTickets";
+import AdminGitHub from "@/components/admin/AdminGitHub";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -132,6 +133,12 @@ export default function Admin() {
           >
             Tickets
           </TabsTrigger>
+          <TabsTrigger 
+            value="github"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            GitHub
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="analytics">
@@ -180,6 +187,10 @@ export default function Admin() {
 
         <TabsContent value="tickets">
           <AdminTickets />
+        </TabsContent>
+
+        <TabsContent value="github">
+          <AdminGitHub />
         </TabsContent>
       </Tabs>
     </div>
