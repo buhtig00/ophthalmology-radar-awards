@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -133,18 +133,20 @@ function HeroSlide() {
 
 // Institutions Section
 function InstitutionsSlide() {
-  const institutions = [
-    { name: "Brill Pharma", logo: "https://ui-avatars.com/api/?name=BP&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Zeiss", logo: "https://ui-avatars.com/api/?name=Z&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Custom Surgical", logo: "https://ui-avatars.com/api/?name=CS&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Equipsa", logo: "https://ui-avatars.com/api/?name=E&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Valle Hebron", logo: "https://ui-avatars.com/api/?name=VH&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Universidad de Sevilla", logo: "https://ui-avatars.com/api/?name=US&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Bascom Palmer", logo: "https://ui-avatars.com/api/?name=BP&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital Clínic Barcelona", logo: "https://ui-avatars.com/api/?name=HC&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "IMO Barcelona", logo: "https://ui-avatars.com/api/?name=IMO&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Vissum", logo: "https://ui-avatars.com/api/?name=VS&background=1a1a1a&color=C9A227&size=120&bold=true" },
-  ];
+  const [partners, setPartners] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    base44.entities.Partner.filter({ is_active: true })
+      .then(data => {
+        setPartners(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setPartners([]);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <section className="py-16 sm:py-24 px-4 sm:px-8 bg-gradient-to-b from-black to-[#0a0a0a] border-y border-white/5">
@@ -167,25 +169,43 @@ function InstitutionsSlide() {
         </motion.div>
 
         {/* Logos Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
-          {institutions.map((institution, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="flex items-center justify-center p-6 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
-            >
-              <img 
-                src={institution.logo} 
-                alt={institution.name}
-                className="w-20 h-20 object-contain opacity-60 group-hover:opacity-100 transition-opacity filter grayscale group-hover:grayscale-0"
-                title={institution.name}
-              />
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
+            {partners.length > 0 ? (
+              partners.map((partner, i) => (
+                <motion.div
+                  key={partner.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex items-center justify-center p-6 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
+                >
+                  {partner.logo_url ? (
+                    <img 
+                      src={partner.logo_url} 
+                      alt={partner.name}
+                      className="w-full h-20 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                      title={partner.name}
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-[#C9A227] font-bold text-sm">{partner.name}</div>
+                    </div>
+                  )}
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-gray-500 py-8">
+                <p className="mb-2">Cargando instituciones...</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Stats bar */}
         <motion.div
