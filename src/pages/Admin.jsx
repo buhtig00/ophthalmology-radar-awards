@@ -6,6 +6,7 @@ import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminUsers from "@/components/admin/AdminUsers";
 import AdminCases from "@/components/admin/AdminCases";
 import AdminFinalists from "@/components/admin/AdminFinalists";
+import AdminEmailLogs from "@/components/admin/AdminEmailLogs";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -51,30 +52,36 @@ export default function Admin() {
       </div>
 
       <Tabs defaultValue="analytics" className="space-y-6">
-        <TabsList className="bg-white/5 border border-white/10 p-1 w-full sm:w-auto">
+        <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
           <TabsTrigger 
             value="analytics"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
           >
             Análisis
           </TabsTrigger>
           <TabsTrigger 
             value="users"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
           >
             Usuarios
           </TabsTrigger>
           <TabsTrigger 
             value="cases"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
           >
             Casos
           </TabsTrigger>
           <TabsTrigger 
             value="finalists"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
           >
             Finalistas
+          </TabsTrigger>
+          <TabsTrigger 
+            value="emails"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+          >
+            Emails
           </TabsTrigger>
         </TabsList>
 
@@ -92,6 +99,10 @@ export default function Admin() {
 
         <TabsContent value="finalists">
           <AdminFinalists />
+        </TabsContent>
+
+        <TabsContent value="emails">
+          <AdminEmailLogs />
         </TabsContent>
       </Tabs>
     </div>
