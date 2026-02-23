@@ -33,6 +33,7 @@ export default function AdminCases() {
   const [selectedJury, setSelectedJury] = useState([]);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [githubConfig, setGithubConfig] = useState({ projectId: "", repo: "" });
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ["adminCases"],
@@ -44,8 +45,50 @@ export default function AdminCases() {
     queryFn: () => base44.entities.Jury.filter({ is_active: true }),
   });
 
+  const { data: githubProjects = [] } = useQuery({
+    queryKey: ["github-projects"],
+    queryFn: async () => {
+      try {
+        const { data } = await base44.functions.invoke("githubGetProjects", {});
+        return data?.projects || [];
+      } catch (error) {
+        return [];
+      }
+    }
+  });
+
+  const { data: githubRepos = [] } = useQuery({
+    queryKey: ["github-repos"],
+    queryFn: async () => {
+      try {
+        const { data } = await base44.functions.invoke("githubRepos", {});
+        return data?.repos || [];
+      } catch (error) {
+        return [];
+      }
+    }
+  });
+
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Case.update(id, data),
+    mutationFn: async ({ id, data, caseData }) => {
+      const result = await base44.entities.Case.update(id, data);
+      
+      // Sync to GitHub if configured
+      if (githubConfig.projectId && githubConfig.repo) {
+        try {
+          await base44.functions.invoke("githubSyncCase", {
+            caseData: { ...caseData, ...data, id },
+            action: "create",
+            projectId: githubConfig.projectId,
+            repo: githubConfig.repo
+          });
+        } catch (error) {
+          console.error("GitHub sync error:", error);
+        }
+      }
+      
+      return result;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminCases"] });
       toast.success("Caso actualizado");
@@ -58,19 +101,22 @@ export default function AdminCases() {
     data: { 
       status: "approved", 
       reviewed_at: new Date().toISOString() 
-    } 
+    },
+    caseData: c
   });
 
   const markAsFinalist = (c) => updateMutation.mutate({ 
     id: c.id, 
     data: { 
       status: "finalist"
-    } 
+    },
+    caseData: c
   });
 
   const changeStatus = (c, newStatus) => updateMutation.mutate({
     id: c.id,
-    data: { status: newStatus }
+    data: { status: newStatus },
+    caseData: c
   });
 
   const reject = () => {
@@ -80,7 +126,8 @@ export default function AdminCases() {
         status: "rejected", 
         rejection_reason: rejectReason, 
         reviewed_at: new Date().toISOString() 
-      } 
+      },
+      caseData: rejectDialog
     });
     setRejectDialog(null);
     setRejectReason("");
@@ -97,12 +144,45 @@ export default function AdminCases() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <FileText className="w-6 h-6 text-[#C9A227]" />
-        <h2 className="text-xl font-bold text-white">Gestión de Casos</h2>
-        <Badge variant="outline" className="bg-white/5 border-white/10 text-gray-400">
-          {filtered.length} casos
-        </Badge>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <FileText className="w-6 h-6 text-[#C9A227]" />
+          <h2 className="text-xl font-bold text-white">Gestión de Casos</h2>
+          <Badge variant="outline" className="bg-white/5 border-white/10 text-gray-400">
+            {filtered.length} casos
+          </Badge>
+        </div>
+        
+        {/* GitHub Configuration */}
+        {(githubProjects.length > 0 || githubRepos.length > 0) && (
+          <div className="flex flex-col sm:flex-row gap-2 text-sm">
+            <Select value={githubConfig.projectId} onValueChange={(val) => setGithubConfig({...githubConfig, projectId: val})}>
+              <SelectTrigger className="w-[200px] bg-white/5 border-white/10 text-white h-8">
+                <SelectValue placeholder="Proyecto GitHub" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#111827] border-white/10">
+                {githubProjects.map(p => (
+                  <SelectItem key={p.id} value={p.id} className="text-white">
+                    {p.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Select value={githubConfig.repo} onValueChange={(val) => setGithubConfig({...githubConfig, repo: val})}>
+              <SelectTrigger className="w-[200px] bg-white/5 border-white/10 text-white h-8">
+                <SelectValue placeholder="Repositorio" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#111827] border-white/10">
+                {githubRepos.map(r => (
+                  <SelectItem key={r.id} value={r.full_name} className="text-white">
+                    {r.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
