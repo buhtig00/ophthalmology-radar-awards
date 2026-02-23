@@ -68,26 +68,25 @@ export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, d
               Ver perfil completo
             </Button>
           </Link>
-            {isSelected ? (
-              <div className="flex items-center gap-2 text-[#c9a84c] text-sm font-medium">
-                <CheckCircle2 className="w-4 h-4" />
-                Tu voto en esta categoría
-              </div>
-            ) : hasVoted ? (
-              <Button disabled size="sm" variant="outline" className="w-full border-white/10 text-gray-500">
-                Ya votaste en esta categoría
-              </Button>
-            ) : (
-              <Button
-                onClick={() => onVote(finalist)}
-                disabled={disabled}
-                size="sm"
-                className="w-full bg-[#c9a84c] hover:bg-[#a07c2e] text-[#0a0e1a] font-semibold"
-              >
-                Votar
-              </Button>
-            )}
-          </div>
+          {isSelected ? (
+            <div className="flex items-center gap-2 text-[#c9a84c] text-sm font-medium">
+              <CheckCircle2 className="w-4 h-4" />
+              Tu voto en esta categoría
+            </div>
+          ) : hasVoted ? (
+            <Button disabled size="sm" variant="outline" className="w-full border-white/10 text-gray-500">
+              Ya votaste en esta categoría
+            </Button>
+          ) : (
+            <Button
+              onClick={() => onVote(finalist)}
+              disabled={disabled}
+              size="sm"
+              className="w-full bg-[#c9a84c] hover:bg-[#a07c2e] text-[#0a0e1a] font-semibold"
+            >
+              Votar
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
