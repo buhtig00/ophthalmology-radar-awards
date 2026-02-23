@@ -1,8 +1,10 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import { FileText, Clock, CheckCircle2, XCircle, Loader2, Calendar } from "lucide-react";
+import { FileText, Clock, CheckCircle2, XCircle, Loader2, Calendar, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
@@ -87,14 +89,16 @@ export default function CasesHistory({ user }) {
                       {status.label}
                     </Badge>
                   </div>
-                  <h4 className="text-white font-semibold mb-1">{c.title}</h4>
+                  <Link to={createPageUrl("CaseDetail") + `?id=${c.id}`}>
+                    <h4 className="text-white font-semibold mb-1 hover:text-[#c9a84c] transition-colors">{c.title}</h4>
+                  </Link>
                   {c.description && (
                     <p className="text-gray-500 text-sm line-clamp-2">{c.description}</p>
                   )}
                 </div>
               </div>
               
-              <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-3">
                 {c.category_name && (
                   <span className="flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#c9a84c]" />
@@ -107,6 +111,13 @@ export default function CasesHistory({ user }) {
                   {format(new Date(c.created_date), "d MMM yyyy")}
                 </span>
               </div>
+
+              <Link to={createPageUrl("CaseDetail") + `?id=${c.id}`}>
+                <span className="inline-flex items-center gap-1.5 text-[#c9a84c] text-sm hover:underline">
+                  <Eye className="w-3.5 h-3.5" />
+                  Ver detalles completos
+                </span>
+              </Link>
 
               {c.status === "rejected" && c.rejection_reason && (
                 <div className="mt-4 p-3 rounded-lg bg-red-500/5 border border-red-500/10">

@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import { CheckCircle2, MapPin, Building2, TrendingUp } from "lucide-react";
+import { CheckCircle2, MapPin, Building2, TrendingUp, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,7 +33,9 @@ export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, d
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h3 className="text-white font-semibold text-lg">{finalist.name}</h3>
+              <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`}>
+                <h3 className="text-white font-semibold text-lg hover:text-[#c9a84c] transition-colors">{finalist.name}</h3>
+              </Link>
               {showVoteCount && (
                 <Badge variant="outline" className="bg-white/5 border-white/10 text-[#c9a84c] flex items-center gap-1">
                   <TrendingUp className="w-3 h-3" />
@@ -57,26 +61,33 @@ export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, d
         {finalist.bio && (
           <p className="text-gray-400 text-sm mt-4 line-clamp-2">{finalist.bio}</p>
         )}
-        <div className="mt-4">
-          {isSelected ? (
-            <div className="flex items-center gap-2 text-[#c9a84c] text-sm font-medium">
-              <CheckCircle2 className="w-4 h-4" />
-              Tu voto en esta categoría
-            </div>
-          ) : hasVoted ? (
-            <Button disabled size="sm" variant="outline" className="w-full border-white/10 text-gray-500">
-              Ya votaste en esta categoría
+        <div className="mt-4 flex flex-col gap-2">
+          <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`}>
+            <Button variant="outline" size="sm" className="w-full border-white/10 text-gray-400 hover:text-white hover:bg-white/5">
+              <Eye className="w-3.5 h-3.5 mr-2" />
+              Ver perfil completo
             </Button>
-          ) : (
-            <Button
-              onClick={() => onVote(finalist)}
-              disabled={disabled}
-              size="sm"
-              className="w-full bg-[#c9a84c] hover:bg-[#a07c2e] text-[#0a0e1a] font-semibold"
-            >
-              Votar
-            </Button>
-          )}
+          </Link>
+            {isSelected ? (
+              <div className="flex items-center gap-2 text-[#c9a84c] text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4" />
+                Tu voto en esta categoría
+              </div>
+            ) : hasVoted ? (
+              <Button disabled size="sm" variant="outline" className="w-full border-white/10 text-gray-500">
+                Ya votaste en esta categoría
+              </Button>
+            ) : (
+              <Button
+                onClick={() => onVote(finalist)}
+                disabled={disabled}
+                size="sm"
+                className="w-full bg-[#c9a84c] hover:bg-[#a07c2e] text-[#0a0e1a] font-semibold"
+              >
+                Votar
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

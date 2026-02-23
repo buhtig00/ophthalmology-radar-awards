@@ -55,6 +55,8 @@ import SubmitCase from './pages/SubmitCase';
 import MyCases from './pages/MyCases';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
+import CaseDetail from './pages/CaseDetail';
+import FinalistDetail from './pages/FinalistDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +69,8 @@ export const PAGES = {
     "MyCases": MyCases,
     "Admin": Admin,
     "Profile": Profile,
+    "CaseDetail": CaseDetail,
+    "FinalistDetail": FinalistDetail,
 }
 
 export const pagesConfig = {

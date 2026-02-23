@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import { BarChart3, Trophy, Loader2, Medal } from "lucide-react";
 
@@ -103,44 +105,46 @@ export default function Rankings() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.04 }}
-                className="rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition-colors"
+                className="rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-8 text-center">
-                    {index < 3 ? (
-                      <Medal className={`w-5 h-5 mx-auto ${medalColors[index]}`} />
-                    ) : (
-                      <span className="text-gray-500 text-sm font-medium">{index + 1}</span>
-                    )}
-                  </div>
-                  <img
-                    src={finalist.photo_url || `https://ui-avatars.com/api/?name=${finalist.name}&background=c9a84c&color=0a0e1a&size=40`}
-                    alt={finalist.name}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-white font-medium text-sm truncate">{finalist.name}</span>
-                      {category && (
-                        <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full hidden sm:inline">
-                          {category.name}
-                        </span>
+                <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`} className="block p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 text-center">
+                      {index < 3 ? (
+                        <Medal className={`w-5 h-5 mx-auto ${medalColors[index]}`} />
+                      ) : (
+                        <span className="text-gray-500 text-sm font-medium">{index + 1}</span>
                       )}
                     </div>
-                    <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percent}%` }}
-                        transition={{ duration: 0.8, delay: index * 0.04 }}
-                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#c9a84c] to-[#e8d48b] rounded-full"
-                      />
+                    <img
+                      src={finalist.photo_url || `https://ui-avatars.com/api/?name=${finalist.name}&background=c9a84c&color=0a0e1a&size=40`}
+                      alt={finalist.name}
+                      className="w-10 h-10 rounded-lg object-cover"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-white font-medium text-sm truncate hover:text-[#c9a84c] transition-colors">{finalist.name}</span>
+                        {category && (
+                          <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-full hidden sm:inline">
+                            {category.name}
+                          </span>
+                        )}
+                      </div>
+                      <div className="relative h-2 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${percent}%` }}
+                          transition={{ duration: 0.8, delay: index * 0.04 }}
+                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#c9a84c] to-[#e8d48b] rounded-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-white font-semibold">{finalist.vote_count || 0}</span>
+                      <span className="text-gray-500 text-xs ml-1">votos</span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-white font-semibold">{finalist.vote_count || 0}</span>
-                    <span className="text-gray-500 text-xs ml-1">votos</span>
-                  </div>
-                </div>
+                </Link>
               </motion.div>
             );
           })}

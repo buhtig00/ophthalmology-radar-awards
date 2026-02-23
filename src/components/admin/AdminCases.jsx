@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -77,15 +79,18 @@ export default function AdminCases() {
                       {c.status}
                     </Badge>
                   </div>
-                  <h4 className="text-white font-medium text-sm">{c.title}</h4>
+                  <Link to={createPageUrl("CaseDetail") + `?id=${c.id}`}>
+                    <h4 className="text-white font-medium text-sm hover:text-[#c9a84c] transition-colors">{c.title}</h4>
+                  </Link>
                   <p className="text-gray-500 text-xs mt-1">
                     {c.created_by} · {c.category_name} · {format(new Date(c.created_date), "d MMM yyyy")}
                   </p>
-                  {c.video_url && (
-                    <a href={c.video_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[#c9a84c] text-xs mt-2 hover:underline">
-                      <ExternalLink className="w-3 h-3" /> Ver video
-                    </a>
-                  )}
+                  <Link 
+                    to={createPageUrl("CaseDetail") + `?id=${c.id}`}
+                    className="inline-flex items-center gap-1 text-[#c9a84c] text-xs mt-2 hover:underline"
+                  >
+                    <Eye className="w-3 h-3" /> Ver detalles
+                  </Link>
                 </div>
                 {c.status === "pending" && (
                   <div className="flex gap-2">

@@ -1,8 +1,10 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import { Vote, Award, Loader2, Calendar, CheckCircle2 } from "lucide-react";
+import { Vote, Award, Loader2, Calendar, CheckCircle2, Eye } from "lucide-react";
 import { format } from "date-fns";
 
 export default function VotingHistory({ user }) {
@@ -88,21 +90,25 @@ export default function VotingHistory({ user }) {
             >
               <div className="flex items-start gap-4">
                 {finalist?.photo_url && (
-                  <img
-                    src={finalist.photo_url}
-                    alt={finalist.name}
-                    className="w-12 h-12 rounded-lg object-cover"
-                  />
+                  <Link to={createPageUrl("FinalistDetail") + `?id=${vote.finalist_id}`}>
+                    <img
+                      src={finalist.photo_url}
+                      alt={finalist.name}
+                      className="w-12 h-12 rounded-lg object-cover hover:opacity-80 transition-opacity"
+                    />
+                  </Link>
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className="text-white font-semibold">{vote.finalist_name || finalist?.name}</h4>
+                    <Link to={createPageUrl("FinalistDetail") + `?id=${vote.finalist_id}`}>
+                      <h4 className="text-white font-semibold hover:text-[#c9a84c] transition-colors">{vote.finalist_name || finalist?.name}</h4>
+                    </Link>
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       <Calendar className="w-3 h-3 inline mr-1" />
                       {format(new Date(vote.created_date), "d MMM yyyy")}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-sm mb-2">
                     <span className="px-2.5 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20 text-xs font-medium">
                       {vote.category_name || category?.name}
                     </span>
@@ -110,6 +116,12 @@ export default function VotingHistory({ user }) {
                       <span className="text-gray-500 text-xs">{finalist.specialty}</span>
                     )}
                   </div>
+                  <Link to={createPageUrl("FinalistDetail") + `?id=${vote.finalist_id}`}>
+                    <span className="inline-flex items-center gap-1 text-[#c9a84c] text-xs hover:underline">
+                      <Eye className="w-3 h-3" />
+                      Ver perfil completo
+                    </span>
+                  </Link>
                 </div>
               </div>
             </motion.div>

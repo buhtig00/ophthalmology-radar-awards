@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Loader2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Loader2, Edit2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
@@ -100,9 +102,16 @@ export default function AdminFinalists() {
                 alt=""
               />
               <div className="flex-1 min-w-0">
-                <p className="text-white text-sm font-medium truncate">{f.name}</p>
+                <Link to={createPageUrl("FinalistDetail") + `?id=${f.id}`}>
+                  <p className="text-white text-sm font-medium truncate hover:text-[#c9a84c] transition-colors">{f.name}</p>
+                </Link>
                 <p className="text-gray-500 text-xs">{f.category_name} · {f.vote_count || 0} votos</p>
               </div>
+              <Link to={createPageUrl("FinalistDetail") + `?id=${f.id}`}>
+                <Button size="icon" variant="ghost" className="text-gray-500 hover:text-white h-8 w-8">
+                  <Eye className="w-3.5 h-3.5" />
+                </Button>
+              </Link>
               <Button size="icon" variant="ghost" className="text-gray-500 hover:text-white h-8 w-8" onClick={() => handleEdit(f)}>
                 <Edit2 className="w-3.5 h-3.5" />
               </Button>
