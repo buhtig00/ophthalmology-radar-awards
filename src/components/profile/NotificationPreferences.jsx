@@ -12,33 +12,33 @@ import {
 
 const NOTIFICATION_OPTIONS = [
   {
-    key: "case_status_updates",
-    title: "Actualizaciones de casos",
-    description: "Notificaciones cuando tus casos sean revisados",
-    icon: FileText,
-  },
-  {
-    key: "voting_reminders",
-    title: "Recordatorios de votación",
-    description: "Recibe recordatorios para votar en categorías pendientes",
+    key: "voting_start",
+    title: "Inicio de votación",
+    description: "Notificación cuando comienza la votación pública",
     icon: Vote,
   },
   {
-    key: "finalist_announcements",
-    title: "Anuncios de finalistas",
-    description: "Notificaciones sobre nuevos finalistas",
+    key: "voting_end",
+    title: "Cierre de votación",
+    description: "Recordatorio cuando se va a cerrar la votación",
+    icon: Vote,
+  },
+  {
+    key: "ticket_reminder",
+    title: "Recordatorio de compra de pases",
+    description: "Recordatorios para comprar tu pase de acceso",
     icon: Award,
   },
   {
-    key: "event_updates",
-    title: "Actualizaciones del evento",
-    description: "Información importante sobre el evento",
+    key: "stream_start",
+    title: "Inicio de transmisión",
+    description: "Notificación cuando comience la transmisión en vivo",
     icon: Calendar,
   },
   {
-    key: "newsletter",
-    title: "Newsletter",
-    description: "Recibe nuestro boletín con novedades",
+    key: "winner_announcement",
+    title: "Anuncio de ganadores",
+    description: "Notificaciones con los ganadores de cada categoría",
     icon: Mail,
   },
 ];
@@ -53,15 +53,12 @@ export default function NotificationPreferences({ user }) {
   const queryClient = useQueryClient();
   const [preferences, setPreferences] = useState(
     user?.notification_preferences || {
-      case_status_updates: true,
-      voting_reminders: true,
-      finalist_announcements: true,
-      event_updates: true,
-      newsletter: false,
+      voting_start: true,
+      voting_end: true,
+      ticket_reminder: true,
+      stream_start: true,
+      winner_announcement: true,
     }
-  );
-  const [digestFrequency, setDigestFrequency] = useState(
-    user?.notification_digest_frequency || "instant"
   );
 
   const updateMutation = useMutation({
@@ -87,51 +84,17 @@ export default function NotificationPreferences({ user }) {
   const handleSave = () => {
     updateMutation.mutate({ 
       notification_preferences: preferences,
-      notification_digest_frequency: digestFrequency
     });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-        <Bell className="w-6 h-6 text-[#c9a84c]" />
+        <Bell className="w-6 h-6 text-[#C9A227]" />
         <div>
           <h3 className="text-white font-semibold text-lg">Notificaciones por Email</h3>
           <p className="text-gray-400 text-sm">Configura cómo quieres recibir notificaciones</p>
         </div>
-      </div>
-
-      {/* Digest Frequency */}
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
-          <Mail className="w-5 h-5 text-[#c9a84c]" />
-          Frecuencia de notificaciones
-        </h3>
-        <p className="text-gray-400 text-sm mb-4">
-          Elige con qué frecuencia quieres recibir notificaciones por email
-        </p>
-        <Select value={digestFrequency} onValueChange={setDigestFrequency}>
-          <SelectTrigger className="bg-white/5 border-white/10 text-white">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {DIGEST_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {digestFrequency === "daily" && (
-          <p className="text-gray-500 text-xs mt-2">
-            Recibirás un resumen diario con todas las notificaciones acumuladas
-          </p>
-        )}
-        {digestFrequency === "weekly" && (
-          <p className="text-gray-500 text-xs mt-2">
-            Recibirás un resumen semanal cada lunes con todas las notificaciones
-          </p>
-        )}
       </div>
 
       {/* Email Preferences */}
@@ -151,8 +114,8 @@ export default function NotificationPreferences({ user }) {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
-                  <div className={`p-2.5 rounded-lg ${isEnabled ? "bg-[#c9a84c]/10" : "bg-white/5"}`}>
-                    <Icon className={`w-5 h-5 ${isEnabled ? "text-[#c9a84c]" : "text-gray-500"}`} />
+                  <div className={`p-2.5 rounded-lg ${isEnabled ? "bg-[#C9A227]/10" : "bg-white/5"}`}>
+                    <Icon className={`w-5 h-5 ${isEnabled ? "text-[#C9A227]" : "text-gray-500"}`} />
                   </div>
                   <div className="flex-1">
                     <h4 className="text-white font-medium mb-1">{option.title}</h4>
@@ -162,7 +125,7 @@ export default function NotificationPreferences({ user }) {
                 <button
                   onClick={() => handleToggle(option.key)}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    isEnabled ? "bg-[#c9a84c]" : "bg-white/10"
+                    isEnabled ? "bg-[#C9A227]" : "bg-white/10"
                   }`}
                 >
                   <span
@@ -181,7 +144,7 @@ export default function NotificationPreferences({ user }) {
         <Button
           onClick={handleSave}
           disabled={updateMutation.isPending}
-          className="bg-[#c9a84c] hover:bg-[#a07c2e] text-[#0a0e1a] font-semibold"
+          className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold"
         >
           {updateMutation.isPending ? (
             <>
