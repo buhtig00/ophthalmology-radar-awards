@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye, Search } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {

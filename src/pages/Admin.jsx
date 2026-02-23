@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, Users, FileText, Award } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Settings, Loader2 } from "lucide-react";
+import AdminAnalytics from "@/components/admin/AdminAnalytics";
+import AdminUsers from "@/components/admin/AdminUsers";
 import AdminCases from "@/components/admin/AdminCases";
 import AdminFinalists from "@/components/admin/AdminFinalists";
 
@@ -10,40 +12,84 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(u => { setUser(u); setLoading(false); }).catch(() => setLoading(false));
+    base44.auth.me()
+      .then(u => {
+        setUser(u);
+        setLoading(false);
+      })
+      .catch(() => {
+        base44.auth.redirectToLogin(window.location.href);
+      });
   }, []);
 
-  if (loading) return null;
-
-  if (!user || user.role !== "admin") {
+  if (loading) {
     return (
-      <div className="p-6 sm:p-8 max-w-2xl mx-auto text-center py-20">
-        <Settings className="w-12 h-12 text-[#c9a84c]/30 mx-auto mb-4" />
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-6 h-6 text-[#c9a84c] animate-spin" />
+      </div>
+    );
+  }
+
+  if (user?.role !== "admin") {
+    return (
+      <div className="p-6 sm:p-8 max-w-4xl mx-auto text-center py-20">
+        <Settings className="w-12 h-12 text-gray-600 mx-auto mb-4" />
         <h2 className="text-white text-xl font-semibold mb-2">Acceso restringido</h2>
-        <p className="text-gray-500">Solo los administradores pueden acceder a este panel.</p>
+        <p className="text-gray-400">Solo administradores pueden acceder a esta página</p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl mx-auto">
+    <div className="p-6 sm:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Panel de Administración</h1>
-        <p className="text-gray-400">Gestiona casos clínicos, finalistas y configuración</p>
+        <div className="flex items-center gap-3 mb-2">
+          <Settings className="w-7 h-7 text-[#c9a84c]" />
+          <h1 className="text-3xl font-bold text-white">Panel de Administración</h1>
+        </div>
+        <p className="text-gray-400">Gestiona usuarios, casos, finalistas y analiza métricas</p>
       </div>
 
-      <Tabs defaultValue="cases">
-        <TabsList className="bg-white/5 border border-white/5 mb-6">
-          <TabsTrigger value="cases" className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] text-gray-400">
-            <FileText className="w-4 h-4 mr-2" /> Casos
+      <Tabs defaultValue="analytics" className="space-y-6">
+        <TabsList className="bg-white/5 border border-white/10 p-1 w-full sm:w-auto">
+          <TabsTrigger 
+            value="analytics"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+          >
+            Análisis
           </TabsTrigger>
-          <TabsTrigger value="finalists" className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] text-gray-400">
-            <Award className="w-4 h-4 mr-2" /> Finalistas
+          <TabsTrigger 
+            value="users"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+          >
+            Usuarios
+          </TabsTrigger>
+          <TabsTrigger 
+            value="cases"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+          >
+            Casos
+          </TabsTrigger>
+          <TabsTrigger 
+            value="finalists"
+            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a]"
+          >
+            Finalistas
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="analytics">
+          <AdminAnalytics />
+        </TabsContent>
+
+        <TabsContent value="users">
+          <AdminUsers />
+        </TabsContent>
+
         <TabsContent value="cases">
           <AdminCases />
         </TabsContent>
+
         <TabsContent value="finalists">
           <AdminFinalists />
         </TabsContent>
