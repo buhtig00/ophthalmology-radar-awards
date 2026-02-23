@@ -60,31 +60,61 @@ export default function Admin() {
         <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
           <TabsTrigger 
             value="analytics"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
             Análisis
           </TabsTrigger>
           <TabsTrigger 
-            value="users"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+            value="dates"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
-            Usuarios
+            Fechas
+          </TabsTrigger>
+          <TabsTrigger 
+            value="categories"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Categorías
           </TabsTrigger>
           <TabsTrigger 
             value="cases"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
             Casos
           </TabsTrigger>
           <TabsTrigger 
             value="finalists"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
             Finalistas
           </TabsTrigger>
           <TabsTrigger 
+            value="jury"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Jurado
+          </TabsTrigger>
+          <TabsTrigger 
+            value="partners"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Partners
+          </TabsTrigger>
+          <TabsTrigger 
+            value="users"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Usuarios
+          </TabsTrigger>
+          <TabsTrigger 
+            value="export"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Exportar
+          </TabsTrigger>
+          <TabsTrigger 
             value="emails"
-            className="data-[state=active]:bg-[#c9a84c] data-[state=active]:text-[#0a0e1a] whitespace-nowrap"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
             Emails
           </TabsTrigger>
@@ -94,8 +124,12 @@ export default function Admin() {
           <AdminAnalytics />
         </TabsContent>
 
-        <TabsContent value="users">
-          <AdminUsers />
+        <TabsContent value="dates">
+          <AdminEventDates />
+        </TabsContent>
+
+        <TabsContent value="categories">
+          <AdminCategories />
         </TabsContent>
 
         <TabsContent value="cases">
@@ -104,6 +138,22 @@ export default function Admin() {
 
         <TabsContent value="finalists">
           <AdminFinalists />
+        </TabsContent>
+
+        <TabsContent value="jury">
+          <AdminJury />
+        </TabsContent>
+
+        <TabsContent value="partners">
+          <AdminPartners />
+        </TabsContent>
+
+        <TabsContent value="users">
+          <AdminUsers />
+        </TabsContent>
+
+        <TabsContent value="export">
+          <AdminExport />
         </TabsContent>
 
         <TabsContent value="emails">
