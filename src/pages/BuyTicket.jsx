@@ -37,12 +37,6 @@ export default function BuyTicket() {
       return;
     }
 
-    // Check if running in iframe
-    if (window.self !== window.top) {
-      toast.error("El checkout solo funciona desde la app publicada. Por favor, abre la app en una nueva pestaña.");
-      return;
-    }
-
     setProcessing(ticketType);
 
     try {
@@ -71,8 +65,14 @@ export default function BuyTicket() {
         throw new Error(response.data.error);
       }
 
-      // Redirect to Stripe Checkout
-      window.location.href = response.data.url;
+      // Check if running in iframe
+      if (window.self !== window.top) {
+        window.open(response.data.url, '_blank');
+        toast.success("Se ha abierto el checkout en una nueva pestaña");
+      } else {
+        // Redirect to Stripe Checkout
+        window.location.href = response.data.url;
+      }
     } catch (error) {
       console.error(error);
       toast.error("Error al procesar el pago. Inténtalo de nuevo.");
