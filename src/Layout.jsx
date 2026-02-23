@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
-  Home, Award, Vote, Upload, FileText, BarChart3, Settings,
+  Home, Award, Vote, Upload, BarChart3, Settings,
   Menu, X, Eye, ChevronRight, LogOut, User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { name: "Votar", page: "Voting", icon: Vote },
   { name: "Rankings", page: "Rankings", icon: BarChart3 },
   { name: "Enviar Caso", page: "SubmitCase", icon: Upload },
-  { name: "Mis Casos", page: "MyCases", icon: FileText },
+  { name: "Mi Perfil", page: "Profile", icon: User },
 ];
 
 const ADMIN_ITEMS = [
