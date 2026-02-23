@@ -12,6 +12,7 @@ import AdminJury from "@/components/admin/AdminJury";
 import AdminPartners from "@/components/admin/AdminPartners";
 import AdminEventDates from "@/components/admin/AdminEventDates";
 import AdminExport from "@/components/admin/AdminExport";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -118,6 +119,12 @@ export default function Admin() {
           >
             Emails
           </TabsTrigger>
+          <TabsTrigger 
+            value="notifications"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            Notificaciones
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="analytics">
@@ -158,6 +165,10 @@ export default function Admin() {
 
         <TabsContent value="emails">
           <AdminEmailLogs />
+        </TabsContent>
+
+        <TabsContent value="notifications">
+          <AdminNotifications />
         </TabsContent>
       </Tabs>
     </div>
