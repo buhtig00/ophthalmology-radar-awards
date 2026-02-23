@@ -214,6 +214,9 @@ export default function CaseDetail() {
             </div>
           </div>
         )}
+
+        {/* Comment Section */}
+        <CommentSection caseId={caseId} />
       </motion.div>
     </div>
   );
