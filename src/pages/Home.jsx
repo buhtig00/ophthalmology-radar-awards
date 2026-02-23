@@ -10,117 +10,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
 
-const SLIDES = [
-  { id: 1, name: "Hero" },
-  { id: 2, name: "Problema" },
-  { id: 3, name: "Visión" },
-  { id: 4, name: "Territorio" },
-  { id: 5, name: "Proceso" },
-  { id: 6, name: "Evaluación" },
-  { id: 7, name: "Categorías" },
-  { id: 8, name: "Finalistas" },
-  { id: 9, name: "Jurado" },
-  { id: 10, name: "Streaming" },
-  { id: 11, name: "Partners" },
-  { id: 12, name: "FAQ" },
-  { id: 13, name: "CTA" },
-];
+
 
 export default function Home() {
-  const [activeSlide, setActiveSlide] = useState(1);
-  const [isScrolling, setIsScrolling] = useState(false);
-
-  useEffect(() => {
-    const handleWheel = (e) => {
-      if (isScrolling) return;
-      
-      if (e.deltaY > 0 && activeSlide < 13) {
-        setIsScrolling(true);
-        setActiveSlide(prev => prev + 1);
-        setTimeout(() => setIsScrolling(false), 1000);
-      } else if (e.deltaY < 0 && activeSlide > 1) {
-        setIsScrolling(true);
-        setActiveSlide(prev => prev - 1);
-        setTimeout(() => setIsScrolling(false), 1000);
-      }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: true });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [activeSlide, isScrolling]);
-
-  const scrollToSlide = (slideId) => {
-    setActiveSlide(slideId);
-  };
-
   return (
-    <div className="relative h-screen overflow-hidden bg-black">
-      {/* Navigation Dots */}
-      <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
-        {SLIDES.map((slide) => (
-          <button
-            key={slide.id}
-            onClick={() => scrollToSlide(slide.id)}
-            className={`group relative transition-all duration-300 ${
-              activeSlide === slide.id ? 'w-2 h-8' : 'w-2 h-2'
-            }`}
-          >
-            <div className={`w-full h-full rounded-full transition-all ${
-              activeSlide === slide.id 
-                ? 'bg-[#C9A227]' 
-                : 'bg-white/20 group-hover:bg-white/40'
-            }`} />
-            <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs text-white/60 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              {slide.name}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* Slides Container */}
-      <div 
-        className="h-screen transition-transform duration-1000 ease-in-out"
-        style={{ transform: `translateY(-${(activeSlide - 1) * 100}vh)` }}
-      >
-        {/* Slide 1: Hero */}
-        <HeroSlide />
-
-        {/* Slide 2: Problema */}
-        <ProblemaSlide />
-
-        {/* Slide 3: Visión */}
-        <VisionSlide />
-
-        {/* Slide 4: Territorio */}
-        <TerritorioSlide />
-
-        {/* Slide 5: Proceso */}
-        <ProcesoSlide />
-
-        {/* Slide 6: Evaluación */}
-        <EvaluacionSlide />
-
-        {/* Slide 7: Categorías */}
-        <CategoriasSlide />
-
-        {/* Slide 8: Finalistas */}
-        <FinalistasSlide />
-
-        {/* Slide 9: Jurado */}
-        <JuradoSlide />
-
-        {/* Slide 10: Streaming */}
-        <StreamingSlide />
-
-        {/* Slide 11: Partners */}
-        <PartnersSlide />
-
-        {/* Slide 12: FAQ */}
-        <FAQSlide />
-
-        {/* Slide 13: CTA Final */}
-        <CTASlide />
-      </div>
+    <div className="relative bg-black overflow-x-hidden">
+      {/* All sections now scroll normally */}
+      <HeroSlide />
+      <ProblemaSlide />
+      <VisionSlide />
+      <TerritorioSlide />
+      <ProcesoSlide />
+      <EvaluacionSlide />
+      <CategoriasSlide />
+      <FinalistasSlide />
+      <JuradoSlide />
+      <StreamingSlide />
+      <PartnersSlide />
+      <FAQSlide />
+      <CTASlide />
     </div>
   );
 }
@@ -128,7 +36,7 @@ export default function Home() {
 // Slide 1: Hero
 function HeroSlide() {
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20">
       {/* Background with cinematic image */}
       <div className="absolute inset-0">
         <div 
@@ -217,17 +125,7 @@ function HeroSlide() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <p className="text-xs text-gray-500">Desliza para explorar</p>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="w-6 h-10 rounded-full border-2 border-[#C9A227]/30 flex items-start justify-center p-2"
-        >
-          <div className="w-1 h-2 bg-[#C9A227] rounded-full" />
-        </motion.div>
-      </div>
+
     </section>
   );
 }
@@ -256,7 +154,7 @@ function ProblemaSlide() {
   ];
 
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-black via-[#0a0a0a] to-black">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -299,7 +197,7 @@ function ProblemaSlide() {
 // Slide 3: Visión
 function VisionSlide() {
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20 px-4 sm:px-8">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-black to-[#0a0a0a]" />
       
       <div className="relative z-10 max-w-6xl mx-auto px-8 grid md:grid-cols-2 gap-12 items-center">
@@ -370,7 +268,7 @@ function VisionSlide() {
 // Slide 4: Territorio
 function TerritorioSlide() {
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden bg-black">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -434,7 +332,7 @@ function ProcesoSlide() {
   ];
 
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-black via-[#0a0a0a] to-black">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -489,7 +387,7 @@ function EvaluacionSlide() {
   ];
 
   return (
-    <section className="h-screen flex items-center justify-center relative overflow-hidden bg-black">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black py-20 px-4 sm:px-8">
       <div className="max-w-6xl mx-auto px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -578,7 +476,7 @@ function CategoriasSlide() {
   ];
 
   return (
-    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black overflow-y-auto py-20">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -653,7 +551,7 @@ function CategoriasSlide() {
 
 function FinalistasSlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-black">
+    <section className="min-h-screen flex items-center justify-center bg-black py-20 px-4 sm:px-8">
       <div className="text-center">
         <Trophy className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
         <h2 className="text-5xl font-bold text-white mb-4">Finalistas</h2>
@@ -665,7 +563,7 @@ function FinalistasSlide() {
 
 function JuradoSlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="text-center">
         <Users className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
         <h2 className="text-5xl font-bold text-white mb-4">Jurado</h2>
@@ -677,7 +575,7 @@ function JuradoSlide() {
 
 function StreamingSlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-black">
+    <section className="min-h-screen flex items-center justify-center bg-black py-20 px-4 sm:px-8">
       <div className="max-w-2xl mx-auto px-8 text-center">
         <Play className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
         <h2 className="text-5xl font-bold text-white mb-6">Acceso Online</h2>
@@ -714,7 +612,7 @@ function StreamingSlide() {
 
 function PartnersSlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="text-center">
         <Star className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
         <h2 className="text-5xl font-bold text-white mb-4">Partners</h2>
@@ -726,7 +624,7 @@ function PartnersSlide() {
 
 function FAQSlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-black">
+    <section className="min-h-screen flex items-center justify-center bg-black py-20 px-4 sm:px-8">
       <div className="text-center">
         <MessageSquare className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
         <h2 className="text-5xl font-bold text-white mb-4">FAQ</h2>
@@ -738,7 +636,7 @@ function FAQSlide() {
 
 function CTASlide() {
   return (
-    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black py-20 px-4 sm:px-8">
       <div className="text-center max-w-2xl mx-auto px-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
