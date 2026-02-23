@@ -51,22 +51,23 @@ export default function AdminAnalytics() {
 
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ["allUsers"],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: () => base44.entities.User.list(null, 5000),
   });
 
   const { data: cases = [], isLoading: casesLoading } = useQuery({
     queryKey: ["cases"],
-    queryFn: () => base44.entities.Case.list(),
+    queryFn: () => base44.entities.Case.list(null, 5000),
   });
 
   const { data: votes = [], isLoading: votesLoading } = useQuery({
     queryKey: ["votes"],
-    queryFn: () => base44.entities.Vote.list(),
+    queryFn: () => base44.entities.Vote.list(null, 10000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: finalists = [], isLoading: finalistsLoading } = useQuery({
     queryKey: ["finalists"],
-    queryFn: () => base44.entities.Finalist.list(),
+    queryFn: () => base44.entities.Finalist.list(null, 1000),
   });
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
@@ -76,12 +77,14 @@ export default function AdminAnalytics() {
 
   const { data: tickets = [], isLoading: ticketsLoading } = useQuery({
     queryKey: ["allTickets"],
-    queryFn: () => base44.entities.Ticket.list(),
+    queryFn: () => base44.entities.Ticket.list(null, 5000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: juryScores = [], isLoading: juryScoresLoading } = useQuery({
     queryKey: ["juryScores"],
-    queryFn: () => base44.entities.JuryScore.list(),
+    queryFn: () => base44.entities.JuryScore.list(null, 5000),
+    staleTime: 5 * 60 * 1000,
   });
 
   const isLoading = usersLoading || casesLoading || votesLoading || finalistsLoading || categoriesLoading || ticketsLoading || juryScoresLoading;
@@ -559,25 +562,25 @@ export default function AdminAnalytics() {
                 <Award className="w-5 h-5 text-[#C9A227]" />
                 Top 10 casos con más votos
               </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-2">#</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Caso</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Categoría</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Hospital</th>
-                      <th className="text-right text-gray-400 text-sm font-medium py-3 px-4">Votos</th>
+              <div className="overflow-x-auto max-h-96">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-white/5 border-b border-white/10">
+                    <tr>
+                      <th className="text-left text-gray-400 font-medium py-3 px-2">#</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Caso</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Categoría</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Hospital</th>
+                      <th className="text-right text-gray-400 font-medium py-3 px-4">Votos</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {topCasesByVotes.map((caseItem, i) => (
+                    {topCasesByVotes.slice(0, 10).map((caseItem, i) => (
                       <tr key={caseItem.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                        <td className="py-3 px-2 text-gray-500 font-medium">{i + 1}</td>
-                        <td className="py-3 px-4 text-white text-sm font-medium">{caseItem.title}</td>
-                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.category_name}</td>
-                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.hospital || 'N/A'}</td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-2 px-2 text-gray-500">{i + 1}</td>
+                        <td className="py-2 px-4 text-white truncate">{caseItem.title}</td>
+                        <td className="py-2 px-4 text-gray-400 truncate">{caseItem.category_name}</td>
+                        <td className="py-2 px-4 text-gray-400 truncate">{caseItem.hospital || 'N/A'}</td>
+                        <td className="py-2 px-4 text-right">
                           <span className="text-[#C9A227] font-semibold">{caseItem.vote_count}</span>
                         </td>
                       </tr>
@@ -741,27 +744,27 @@ export default function AdminAnalytics() {
                 <Award className="w-5 h-5 text-[#C9A227]" />
                 Top 10 casos con mejor puntuación promedio
               </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-2">#</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Caso</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Categoría</th>
-                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Hospital</th>
-                      <th className="text-center text-gray-400 text-sm font-medium py-3 px-4">Evaluaciones</th>
-                      <th className="text-right text-gray-400 text-sm font-medium py-3 px-4">Puntuación</th>
+              <div className="overflow-x-auto max-h-96">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-white/5 border-b border-white/10">
+                    <tr>
+                      <th className="text-left text-gray-400 font-medium py-3 px-2">#</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Caso</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Categoría</th>
+                      <th className="text-left text-gray-400 font-medium py-3 px-4">Hospital</th>
+                      <th className="text-center text-gray-400 font-medium py-3 px-4">Evaluaciones</th>
+                      <th className="text-right text-gray-400 font-medium py-3 px-4">Puntuación</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {topCasesByScore.map((caseItem, i) => (
+                    {topCasesByScore.slice(0, 10).map((caseItem, i) => (
                       <tr key={caseItem.id} className="border-b border-white/5 hover:bg-white/[0.02]">
-                        <td className="py-3 px-2 text-gray-500 font-medium">{i + 1}</td>
-                        <td className="py-3 px-4 text-white text-sm font-medium">{caseItem.title}</td>
-                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.category_name}</td>
-                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.hospital || 'N/A'}</td>
-                        <td className="py-3 px-4 text-center text-gray-400 text-sm">{caseItem.scoreCount}</td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-2 px-2 text-gray-500">{i + 1}</td>
+                        <td className="py-2 px-4 text-white truncate">{caseItem.title}</td>
+                        <td className="py-2 px-4 text-gray-400 truncate">{caseItem.category_name}</td>
+                        <td className="py-2 px-4 text-gray-400 truncate">{caseItem.hospital || 'N/A'}</td>
+                        <td className="py-2 px-4 text-center text-gray-400">{caseItem.scoreCount}</td>
+                        <td className="py-2 px-4 text-right">
                           <span className="text-[#C9A227] font-semibold">{caseItem.avgScore.toFixed(2)}/40</span>
                         </td>
                       </tr>
