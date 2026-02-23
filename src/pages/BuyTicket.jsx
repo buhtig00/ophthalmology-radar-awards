@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { loadStripe } from "@stripe/stripe-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +8,6 @@ import { Loader2, Tv, Crown, CheckCircle2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
 
 export default function BuyTicket() {
   const [user, setUser] = useState(null);
@@ -40,10 +37,15 @@ export default function BuyTicket() {
       return;
     }
 
+    // Check if running in iframe
+    if (window.self !== window.top) {
+      toast.error("El checkout solo funciona desde la app publicada. Por favor, abre la app en una nueva pestaña.");
+      return;
+    }
+
     setProcessing(ticketType);
 
     try {
-      const stripe = await stripePromise;
       const price = ticketType === "streaming" 
         ? (eventConfig?.streaming_price_cents || 2900)
         : (eventConfig?.vip_price_cents || 15000);
@@ -58,47 +60,19 @@ export default function BuyTicket() {
         paid: false,
       });
 
-      // Create Stripe checkout session
-      const session = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${import.meta.env.VITE_STRIPE_SECRET_KEY}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          "payment_method_types[]": "card",
-          "line_items[0][price_data][currency]": "eur",
-          "line_items[0][price_data][product_data][name]": ticketType === "streaming" ? "Pase Streaming - Gala Ophthalmology Radar Awards 2026" : "Pase VIP - Gala Ophthalmology Radar Awards 2026",
-          "line_items[0][price_data][unit_amount]": price,
-          "line_items[0][quantity]": "1",
-          "mode": "payment",
-          "success_url": `${window.location.origin}${window.location.pathname}?success=true&ticket_id=${ticket.id}`,
-          "cancel_url": `${window.location.origin}${window.location.pathname}`,
-          "metadata[ticket_id]": ticket.id,
-          "metadata[user_email]": user.email,
-          "customer_email": user.email,
-        }),
+      // Create checkout session via backend
+      const response = await base44.functions.invoke('createCheckoutSession', {
+        ticketType,
+        ticketId: ticket.id,
+        userEmail: user.email
       });
 
-      const sessionData = await session.json();
-
-      if (sessionData.error) {
-        throw new Error(sessionData.error.message);
+      if (response.data.error) {
+        throw new Error(response.data.error);
       }
-
-      // Update ticket with session ID
-      await base44.entities.Ticket.update(ticket.id, {
-        stripe_session_id: sessionData.id,
-      });
 
       // Redirect to Stripe Checkout
-      const result = await stripe.redirectToCheckout({
-        sessionId: sessionData.id,
-      });
-
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
+      window.location.href = response.data.url;
     } catch (error) {
       console.error(error);
       toast.error("Error al procesar el pago. Inténtalo de nuevo.");
@@ -110,16 +84,8 @@ export default function BuyTicket() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("success") === "true") {
-      const ticketId = params.get("ticket_id");
-      if (ticketId) {
-        base44.entities.Ticket.update(ticketId, {
-          paid: true,
-          paid_at: new Date().toISOString(),
-        }).then(() => {
-          toast.success("¡Pago completado! Tu pase ha sido activado.");
-          window.history.replaceState({}, "", window.location.pathname);
-        });
-      }
+      toast.success("¡Pago completado! Tu pase ha sido activado.");
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
 
