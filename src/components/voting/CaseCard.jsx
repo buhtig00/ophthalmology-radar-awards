@@ -1,12 +1,71 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Video, Hospital, MapPin, TrendingUp, CheckCircle2, Eye } from "lucide-react";
+import { Video, Hospital, MapPin, TrendingUp, CheckCircle2, Eye, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function CaseCard({ caseItem, hasVoted, isSelected, onVote, disabled, showVoteCount }) {
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [realTimeVotes, setRealTimeVotes] = useState(caseItem.vote_count || 0);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Real-time vote count subscription
+  useEffect(() => {
+    if (!caseItem.id) return;
+    
+    const unsubscribe = base44.entities.Case.subscribe((event) => {
+      if (event.id === caseItem.id && event.type === 'update' && event.data.vote_count !== undefined) {
+        setRealTimeVotes(event.data.vote_count);
+      }
+    });
+
+    return unsubscribe;
+  }, [caseItem.id]);
+
+  const { data: myFavorites = [] } = useQuery({
+    queryKey: ["myFavorites"],
+    queryFn: () => user ? base44.entities.Favorite.filter({ created_by: user.email }) : [],
+    enabled: !!user,
+  });
+
+  const isFavorited = myFavorites.some(f => f.case_id === caseItem.id);
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async () => {
+      if (isFavorited) {
+        const fav = myFavorites.find(f => f.case_id === caseItem.id);
+        await base44.entities.Favorite.delete(fav.id);
+      } else {
+        await base44.entities.Favorite.create({
+          case_id: caseItem.id,
+          case_title: caseItem.title,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myFavorites"] });
+      toast.success(isFavorited ? "Eliminado de favoritos" : "Añadido a favoritos");
+    },
+  });
+
+  const handleFavoriteClick = (e) => {
+    e.preventDefault();
+    if (!user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
+    }
+    toggleFavoriteMutation.mutate();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -21,9 +80,15 @@ export default function CaseCard({ caseItem, hasVoted, isSelected, onVote, disab
           {showVoteCount && (
             <Badge className="absolute top-3 right-3 bg-black/60 backdrop-blur-xl border-[#C9A227]/30 text-[#C9A227] flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
-              {caseItem.vote_count || 0}
+              {realTimeVotes}
             </Badge>
           )}
+          <button
+            onClick={handleFavoriteClick}
+            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-center hover:bg-black/80 transition-all group/fav"
+          >
+            <Heart className={`w-4 h-4 transition-all ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover/fav:text-red-400'}`} />
+          </button>
         </div>
       )}
 

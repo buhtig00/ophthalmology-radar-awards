@@ -12,12 +12,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import VoteConfirmationDialog from "@/components/voting/VoteConfirmationDialog";
+import CommentSection from "@/components/voting/CommentSection";
 
 export default function FinalistDetail() {
   const queryClient = useQueryClient();
   const [finalistId, setFinalistId] = useState(null);
   const [user, setUser] = useState(null);
   const [confirmingVote, setConfirmingVote] = useState(null);
+  const [realTimeVotes, setRealTimeVotes] = useState(0);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -33,6 +35,25 @@ export default function FinalistDetail() {
     },
     enabled: !!finalistId,
   });
+
+  // Real-time vote count subscription
+  useEffect(() => {
+    if (!finalistId) return;
+    
+    const unsubscribe = base44.entities.Finalist.subscribe((event) => {
+      if (event.id === finalistId && event.type === 'update' && event.data.vote_count !== undefined) {
+        setRealTimeVotes(event.data.vote_count);
+      }
+    });
+
+    return unsubscribe;
+  }, [finalistId]);
+
+  useEffect(() => {
+    if (finalist) {
+      setRealTimeVotes(finalist.vote_count || 0);
+    }
+  }, [finalist]);
 
   const { data: myVotes = [] } = useQuery({
     queryKey: ["myVotes"],
@@ -153,7 +174,7 @@ export default function FinalistDetail() {
                 </div>
                 <Badge variant="outline" className="bg-[#c9a84c]/10 border-[#c9a84c]/20 text-[#c9a84c] flex items-center gap-2 px-4 py-2 text-base">
                   <TrendingUp className="w-4 h-4" />
-                  {finalist.vote_count || 0} votos
+                  {realTimeVotes} votos
                 </Badge>
               </div>
 
@@ -227,6 +248,9 @@ export default function FinalistDetail() {
             <p className="text-gray-300 text-lg leading-relaxed">{finalist.bio}</p>
           </div>
         )}
+
+        {/* Comment Section */}
+        <CommentSection finalistId={finalistId} />
       </motion.div>
 
       <VoteConfirmationDialog

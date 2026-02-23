@@ -1,12 +1,70 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
-import { CheckCircle2, MapPin, Building2, TrendingUp, Eye } from "lucide-react";
+import { CheckCircle2, MapPin, Building2, TrendingUp, Eye, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, disabled, showVoteCount = false }) {
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [realTimeVotes, setRealTimeVotes] = useState(finalist.vote_count || 0);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Real-time vote count subscription
+  useEffect(() => {
+    if (!finalist.id) return;
+    
+    const unsubscribe = base44.entities.Finalist.subscribe((event) => {
+      if (event.id === finalist.id && event.type === 'update' && event.data.vote_count !== undefined) {
+        setRealTimeVotes(event.data.vote_count);
+      }
+    });
+
+    return unsubscribe;
+  }, [finalist.id]);
+
+  const { data: myFavorites = [] } = useQuery({
+    queryKey: ["myFavorites"],
+    queryFn: () => user ? base44.entities.Favorite.filter({ created_by: user.email }) : [],
+    enabled: !!user,
+  });
+
+  const isFavorited = myFavorites.some(f => f.finalist_id === finalist.id);
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async () => {
+      if (isFavorited) {
+        const fav = myFavorites.find(f => f.finalist_id === finalist.id);
+        await base44.entities.Favorite.delete(fav.id);
+      } else {
+        await base44.entities.Favorite.create({
+          finalist_id: finalist.id,
+          finalist_name: finalist.name,
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myFavorites"] });
+      toast.success(isFavorited ? "Eliminado de favoritos" : "Añadido a favoritos");
+    },
+  });
+
+  const handleFavoriteClick = () => {
+    if (!user) {
+      base44.auth.redirectToLogin(window.location.href);
+      return;
+    }
+    toggleFavoriteMutation.mutate();
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -36,12 +94,20 @@ export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, d
               <Link to={createPageUrl("FinalistDetail") + `?id=${finalist.id}`}>
                 <h3 className="text-white font-semibold text-lg hover:text-[#c9a84c] transition-colors">{finalist.name}</h3>
               </Link>
-              {showVoteCount && (
-                <Badge variant="outline" className="bg-white/5 border-white/10 text-[#c9a84c] flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  {finalist.vote_count || 0}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                {showVoteCount && (
+                  <Badge variant="outline" className="bg-white/5 border-white/10 text-[#c9a84c] flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    {realTimeVotes}
+                  </Badge>
+                )}
+                <button
+                  onClick={handleFavoriteClick}
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/5 transition-all"
+                >
+                  <Heart className={`w-4 h-4 transition-all ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400 hover:text-red-400'}`} />
+                </button>
+              </div>
             </div>
             <p className="text-[#c9a84c] text-sm font-medium">{finalist.specialty}</p>
             <div className="flex flex-wrap items-center gap-3 mt-2 text-gray-500 text-xs">
