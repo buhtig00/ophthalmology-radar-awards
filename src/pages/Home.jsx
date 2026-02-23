@@ -190,7 +190,7 @@ function HeroSlide() {
             </Button>
           </Link>
           <Link to={createPageUrl("Categories")}>
-            <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 backdrop-blur-xl px-10 h-14 text-lg">
+            <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 hover:text-white backdrop-blur-xl px-10 h-14 text-lg bg-black/20">
               Explorar Categorías
             </Button>
           </Link>
@@ -590,9 +590,11 @@ function StreamingSlide() {
               Acceso a repetición 48h
             </li>
           </ul>
-          <Button size="lg" className="w-full bg-[#C9A227] hover:bg-[#E8C547] text-black font-bold h-14 text-lg">
-            Comprar Pase
-          </Button>
+          <Link to={createPageUrl("BuyTicket")}>
+            <Button size="lg" className="w-full bg-[#C9A227] hover:bg-[#E8C547] text-black font-bold h-14 text-lg">
+              Comprar Pase
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
@@ -644,7 +646,7 @@ function CTASlide() {
               </Button>
             </Link>
             <Link to={createPageUrl("Voting")}>
-              <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 px-12 h-16 text-lg">
+              <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 hover:text-white px-12 h-16 text-lg bg-black/20">
                 Explorar finalistas
               </Button>
             </Link>
