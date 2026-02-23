@@ -1,9 +1,10 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, MapPin, Building2 } from "lucide-react";
+import { CheckCircle2, MapPin, Building2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, disabled }) {
+export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, disabled, showVoteCount = false }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -29,7 +30,15 @@ export default function FinalistCard({ finalist, hasVoted, isSelected, onVote, d
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-white font-semibold text-lg">{finalist.name}</h3>
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h3 className="text-white font-semibold text-lg">{finalist.name}</h3>
+              {showVoteCount && (
+                <Badge variant="outline" className="bg-white/5 border-white/10 text-[#c9a84c] flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  {finalist.vote_count || 0}
+                </Badge>
+              )}
+            </div>
             <p className="text-[#c9a84c] text-sm font-medium">{finalist.specialty}</p>
             <div className="flex flex-wrap items-center gap-3 mt-2 text-gray-500 text-xs">
               {finalist.hospital && (

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Award } from "lucide-react";
+import { Loader2, Award, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import FinalistCard from "@/components/voting/FinalistCard";
+import VoteConfirmationDialog from "@/components/voting/VoteConfirmationDialog";
 import { toast } from "sonner";
 
 export default function Voting() {
   const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [user, setUser] = useState(null);
+  const [confirmingVote, setConfirmingVote] = useState(null);
+  const [showVoteCounts, setShowVoteCounts] = useState(true);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -55,9 +59,11 @@ export default function Voting() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myVotes"] });
       queryClient.invalidateQueries({ queryKey: ["finalists"] });
+      setConfirmingVote(null);
       toast.success("¡Voto registrado correctamente!");
     },
     onError: () => {
+      setConfirmingVote(null);
       toast.error("Error al votar. Inténtalo de nuevo.");
     },
   });
@@ -67,7 +73,13 @@ export default function Voting() {
       base44.auth.redirectToLogin(window.location.href);
       return;
     }
-    voteMutation.mutate(finalist);
+    setConfirmingVote(finalist);
+  };
+
+  const confirmVote = () => {
+    if (confirmingVote) {
+      voteMutation.mutate(confirmingVote);
+    }
   };
 
   const filteredFinalists = finalists.filter(f => f.category_id === selectedCategory);
@@ -77,9 +89,29 @@ export default function Voting() {
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto">
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Award className="w-7 h-7 text-[#c9a84c]" />
-          <h1 className="text-3xl font-bold text-white">Votar</h1>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <div className="flex items-center gap-3">
+            <Award className="w-7 h-7 text-[#c9a84c]" />
+            <h1 className="text-3xl font-bold text-white">Votar</h1>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowVoteCounts(!showVoteCounts)}
+            className="border-white/10 text-gray-400 hover:text-white hover:bg-white/5 flex items-center gap-2"
+          >
+            {showVoteCounts ? (
+              <>
+                <EyeOff className="w-4 h-4" />
+                <span className="hidden sm:inline">Ocultar votos</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4" />
+                <span className="hidden sm:inline">Mostrar votos</span>
+              </>
+            )}
+          </Button>
         </div>
         <p className="text-gray-400">Selecciona una categoría y vota por tu favorito. Un voto por categoría.</p>
       </div>
@@ -123,10 +155,19 @@ export default function Voting() {
               isSelected={myVotedFinalistIds.includes(finalist.id)}
               onVote={handleVote}
               disabled={voteMutation.isPending}
+              showVoteCount={showVoteCounts}
             />
           ))}
         </div>
       )}
+
+      <VoteConfirmationDialog
+        finalist={confirmingVote}
+        isOpen={!!confirmingVote}
+        onConfirm={confirmVote}
+        onCancel={() => setConfirmingVote(null)}
+        isProcessing={voteMutation.isPending}
+      />
     </div>
   );
 }
