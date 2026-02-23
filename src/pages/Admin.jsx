@@ -7,6 +7,11 @@ import AdminUsers from "@/components/admin/AdminUsers";
 import AdminCases from "@/components/admin/AdminCases";
 import AdminFinalists from "@/components/admin/AdminFinalists";
 import AdminEmailLogs from "@/components/admin/AdminEmailLogs";
+import AdminCategories from "@/components/admin/AdminCategories";
+import AdminJury from "@/components/admin/AdminJury";
+import AdminPartners from "@/components/admin/AdminPartners";
+import AdminEventDates from "@/components/admin/AdminEventDates";
+import AdminExport from "@/components/admin/AdminExport";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
