@@ -10,7 +10,15 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e1a] via-[#111827] to-[#0a0e1a]" />
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1464047736614-af63643285bf?w=1920&h=1080&fit=crop&q=80)',
+          }}
+        />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e1a]/95 via-[#111827]/90 to-[#0a0e1a]/95" />
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#c9a84c]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#c9a84c]/3 rounded-full blur-3xl" />
         {/* Grid pattern */}
