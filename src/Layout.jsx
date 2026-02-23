@@ -72,8 +72,8 @@ export default function Layout({ children, currentPageName }) {
         <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-              <Eye className="w-6 h-6 text-[#c9a84c]" />
-              <span className="text-white font-semibold tracking-wide text-sm">OPHTHALMOLOGY RADAR <span className="text-[#c9a84c]">AWARDS</span></span>
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c08734be772c3bc57b27f/6fd832a21_ophthalmologyrada2r.png" alt="Ophthalmology Radar" className="h-8" style={{filter: 'brightness(0) saturate(100%) invert(67%) sepia(45%) saturate(514%) hue-rotate(8deg) brightness(96%) contrast(86%)'}} />
+              <span className="text-white font-semibold tracking-wide text-sm">AWARDS</span>
             </Link>
             <div className="hidden md:flex items-center gap-1">
               {NAV_ITEMS.map(item => (
@@ -216,10 +216,9 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#0a0e1a] border-r border-white/5 fixed inset-y-0">
         <div className="p-5 border-b border-white/5">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <Eye className="w-6 h-6 text-[#c9a84c]" />
+          <Link to={createPageUrl("Home")} className="flex items-center gap-3">
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c08734be772c3bc57b27f/6fd832a21_ophthalmologyrada2r.png" alt="Ophthalmology Radar" className="h-10" style={{filter: 'brightness(0) saturate(100%) invert(67%) sepia(45%) saturate(514%) hue-rotate(8deg) brightness(96%) contrast(86%)'}} />
             <div>
-              <div className="text-white font-semibold text-sm tracking-wide">OPHTHALMOLOGY RADAR</div>
               <div className="text-[#c9a84c] text-xs font-medium tracking-widest">AWARDS 2026</div>
             </div>
           </Link>
@@ -263,8 +262,8 @@ export default function Layout({ children, currentPageName }) {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0e1a]/95 backdrop-blur-xl border-b border-white/5">
         <div className="h-14 px-4 flex items-center justify-between">
           <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <Eye className="w-5 h-5 text-[#c9a84c]" />
-            <span className="text-white font-semibold text-xs">ORA <span className="text-[#c9a84c]">2026</span></span>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c08734be772c3bc57b27f/6fd832a21_ophthalmologyrada2r.png" alt="OR" className="h-6" style={{filter: 'brightness(0) saturate(100%) invert(67%) sepia(45%) saturate(514%) hue-rotate(8deg) brightness(96%) contrast(86%)'}} />
+            <span className="text-[#c9a84c] font-semibold text-xs">2026</span>
           </Link>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="text-white">
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
