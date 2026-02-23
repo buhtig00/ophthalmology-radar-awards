@@ -4,9 +4,15 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
   Home, Award, Vote, Upload, BarChart3, Settings,
-  Menu, X, Eye, ChevronRight, LogOut, User, Calendar
+  Menu, X, Eye, ChevronRight, LogOut, User, Calendar, ChevronDown, Ticket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NAV_ITEMS = [
   { name: "Inicio", page: "Home", icon: Home },
@@ -14,8 +20,18 @@ const NAV_ITEMS = [
   { name: "Votar", page: "Voting", icon: Vote },
   { name: "Rankings", page: "Rankings", icon: BarChart3 },
   { name: "Calendario", page: "EventCalendar", icon: Calendar },
-  { name: "Enviar Caso", page: "SubmitCase", icon: Upload },
-  { name: "Pases", page: "BuyTicket", icon: Eye },
+];
+
+const DROPDOWN_ITEMS = {
+  label: "Participar",
+  icon: Upload,
+  items: [
+    { name: "Enviar Caso", page: "SubmitCase", icon: Upload },
+    { name: "Comprar Pases", page: "BuyTicket", icon: Ticket },
+  ]
+};
+
+const USER_ITEMS = [
   { name: "Mi Perfil", page: "Profile", icon: User },
 ];
 
@@ -33,6 +49,12 @@ export default function Layout({ children, currentPageName }) {
 
   const isAdmin = user?.role === "admin";
   const allItems = isAdmin ? [...NAV_ITEMS, ...ADMIN_ITEMS] : NAV_ITEMS;
+  const allSidebarItems = [
+    ...NAV_ITEMS,
+    ...DROPDOWN_ITEMS.items,
+    ...USER_ITEMS,
+    ...(isAdmin ? ADMIN_ITEMS : [])
+  ];
 
   if (currentPageName === "Home") {
     return (
@@ -54,7 +76,47 @@ export default function Layout({ children, currentPageName }) {
               <span className="text-white font-semibold tracking-wide text-sm">OPHTHALMOLOGY RADAR <span className="text-[#c9a84c]">AWARDS</span></span>
             </Link>
             <div className="hidden md:flex items-center gap-1">
-              {allItems.map(item => (
+              {NAV_ITEMS.map(item => (
+                <Link
+                  key={item.page}
+                  to={createPageUrl(item.page)}
+                  className={`px-3 py-2 rounded-lg text-sm transition-all ${
+                    currentPageName === item.page
+                      ? "text-[#c9a84c] bg-[#c9a84c]/10"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={`px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-1 ${
+                    DROPDOWN_ITEMS.items.some(i => i.page === currentPageName)
+                      ? "text-[#c9a84c] bg-[#c9a84c]/10"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}>
+                    {DROPDOWN_ITEMS.label}
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-[#0a0e1a]/95 border-white/10 backdrop-blur-xl">
+                  {DROPDOWN_ITEMS.items.map(item => (
+                    <DropdownMenuItem key={item.page} asChild>
+                      <Link
+                        to={createPageUrl(item.page)}
+                        className="flex items-center gap-2 text-gray-300 hover:text-white cursor-pointer"
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {isAdmin && ADMIN_ITEMS.map(item => (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
@@ -87,8 +149,8 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </div>
           {mobileOpen && (
-            <div className="md:hidden bg-[#0a0e1a]/95 backdrop-blur-xl border-t border-white/5 p-4">
-              {allItems.map(item => (
+            <div className="md:hidden bg-[#0a0e1a]/95 backdrop-blur-xl border-t border-white/5 p-4 space-y-1">
+              {NAV_ITEMS.map(item => (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
@@ -99,6 +161,35 @@ export default function Layout({ children, currentPageName }) {
                   {item.name}
                 </Link>
               ))}
+              <div className="border-t border-white/5 my-2 pt-2">
+                <p className="text-gray-500 text-xs px-4 py-2 font-semibold">Participar</p>
+                {DROPDOWN_ITEMS.items.map(item => (
+                  <Link
+                    key={item.page}
+                    to={createPageUrl(item.page)}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+              {isAdmin && (
+                <div className="border-t border-white/5 my-2 pt-2">
+                  {ADMIN_ITEMS.map(item => (
+                    <Link
+                      key={item.page}
+                      to={createPageUrl(item.page)}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white transition-all"
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </nav>
@@ -134,7 +225,7 @@ export default function Layout({ children, currentPageName }) {
           </Link>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {allItems.map(item => (
+          {allSidebarItems.map(item => (
             <Link
               key={item.page}
               to={createPageUrl(item.page)}
@@ -181,7 +272,7 @@ export default function Layout({ children, currentPageName }) {
         </div>
         {mobileOpen && (
           <div className="bg-[#0a0e1a] border-t border-white/5 p-3 space-y-1">
-            {allItems.map(item => (
+            {allSidebarItems.map(item => (
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}

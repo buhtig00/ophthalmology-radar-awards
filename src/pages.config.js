@@ -48,35 +48,35 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Admin from './pages/Admin';
+import BuyTicket from './pages/BuyTicket';
 import CaseDetail from './pages/CaseDetail';
 import Categories from './pages/Categories';
+import EventCalendar from './pages/EventCalendar';
 import FinalistDetail from './pages/FinalistDetail';
 import Home from './pages/Home';
+import LiveStream from './pages/LiveStream';
 import MyCases from './pages/MyCases';
 import Profile from './pages/Profile';
 import Rankings from './pages/Rankings';
 import SubmitCase from './pages/SubmitCase';
 import Voting from './pages/Voting';
-import BuyTicket from './pages/BuyTicket';
-import LiveStream from './pages/LiveStream';
-import EventCalendar from './pages/EventCalendar';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Admin": Admin,
+    "BuyTicket": BuyTicket,
     "CaseDetail": CaseDetail,
     "Categories": Categories,
+    "EventCalendar": EventCalendar,
     "FinalistDetail": FinalistDetail,
     "Home": Home,
+    "LiveStream": LiveStream,
     "MyCases": MyCases,
     "Profile": Profile,
     "Rankings": Rankings,
     "SubmitCase": SubmitCase,
     "Voting": Voting,
-    "BuyTicket": BuyTicket,
-    "LiveStream": LiveStream,
-    "EventCalendar": EventCalendar,
 }
 
 export const pagesConfig = {
