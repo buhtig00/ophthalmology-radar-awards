@@ -90,6 +90,10 @@ export default function SubmitCase() {
       setSubmitted(true);
       toast.success(editingCaseId ? "¡Caso actualizado correctamente!" : "¡Caso enviado correctamente!");
     },
+    onError: (error) => {
+      console.error("Error submitting case:", error);
+      toast.error("Error al enviar el caso. Por favor, intenta de nuevo.");
+    },
   });
 
   const handleVideoUpload = async (e) => {
