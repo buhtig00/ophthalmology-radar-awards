@@ -10,7 +10,7 @@ const CATEGORY_ICONS = {
   "Segmento Anterior": "🔬",
   "Córnea": "🌀",
   "Oculoplástica": "✨",
-  "Pediatría": "👶",
+  "Oftalmopediatría": "👶",
 };
 
 export default function CategoriesPreview({ categories }) {
