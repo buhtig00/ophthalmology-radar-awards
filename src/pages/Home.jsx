@@ -134,16 +134,16 @@ function HeroSlide() {
 // Institutions Section
 function InstitutionsSlide() {
   const institutions = [
+    { name: "Brill Pharma", logo: "https://ui-avatars.com/api/?name=BP&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Zeiss", logo: "https://ui-avatars.com/api/?name=Z&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Custom Surgical", logo: "https://ui-avatars.com/api/?name=CS&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Equipsa", logo: "https://ui-avatars.com/api/?name=E&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Valle Hebron", logo: "https://ui-avatars.com/api/?name=VH&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Universidad de Sevilla", logo: "https://ui-avatars.com/api/?name=US&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Bascom Palmer", logo: "https://ui-avatars.com/api/?name=BP&background=1a1a1a&color=C9A227&size=120&bold=true" },
     { name: "Hospital Clínic Barcelona", logo: "https://ui-avatars.com/api/?name=HC&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital La Paz", logo: "https://ui-avatars.com/api/?name=LP&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital Ramón y Cajal", logo: "https://ui-avatars.com/api/?name=RC&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Instituto de Oftalmología", logo: "https://ui-avatars.com/api/?name=IO&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital de Sant Pau", logo: "https://ui-avatars.com/api/?name=SP&background=1a1a1a&color=C9A227&size=120&bold=true" },
     { name: "IMO Barcelona", logo: "https://ui-avatars.com/api/?name=IMO&background=1a1a1a&color=C9A227&size=120&bold=true" },
     { name: "Vissum", logo: "https://ui-avatars.com/api/?name=VS&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Clínica Baviera", logo: "https://ui-avatars.com/api/?name=CB&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital Lisboa Central", logo: "https://ui-avatars.com/api/?name=HL&background=1a1a1a&color=C9A227&size=120&bold=true" },
-    { name: "Hospital Porto", logo: "https://ui-avatars.com/api/?name=HP&background=1a1a1a&color=C9A227&size=120&bold=true" },
   ];
 
   return (
