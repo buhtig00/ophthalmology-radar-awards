@@ -529,12 +529,123 @@ function EvaluacionSlide() {
 
 // Placeholder slides for remaining sections
 function CategoriasSlide() {
+  const categoryGroups = [
+    {
+      title: "Categorías Core Quirúrgicas",
+      icon: Trophy,
+      color: "from-[#C9A227] to-[#E8C547]",
+      categories: [
+        { id: 1, name: "Mejor cirugía de catarata compleja", desc: "Zonulopatía, pseudoexfoliación, trauma" },
+        { id: 2, name: "Mejor cirugía refractiva avanzada", desc: "SMILE, ICL, casos post-LASIK" },
+        { id: 3, name: "Mejor cirugía de glaucoma", desc: "MIGS, cirugía combinada, rescate" },
+        { id: 4, name: "Mejor cirugía de retina", desc: "Membranas, DR, vítreo complejo" },
+        { id: 5, name: "Mejor trasplante corneal", desc: "DMEK, DSAEK, DALK, alto riesgo" },
+        { id: 6, name: "Mejor cirugía oculoplástica", desc: "Reconstrucción, estética, trauma" }
+      ]
+    },
+    {
+      title: "Excelencia Técnica",
+      icon: Zap,
+      color: "from-blue-400 to-cyan-400",
+      categories: [
+        { id: 7, name: "Mejor manejo de complicaciones", desc: "Resolución magistral intraoperatoria" },
+        { id: 8, name: "Mejor toma de decisiones", desc: "Estrategia y criterio clínico" },
+        { id: 9, name: "Mejor innovación técnica", desc: "Nueva técnica o modificación" },
+        { id: 10, name: "Mejor resultado visual", desc: "Impacto objetivo medible" }
+      ]
+    },
+    {
+      title: "Contenido y Didáctica",
+      icon: Video,
+      color: "from-purple-400 to-pink-400",
+      categories: [
+        { id: 11, name: "Mejor video educativo", desc: "Claridad y pedagogía" },
+        { id: 12, name: "Mejor narración clínica", desc: "Valor formativo paso a paso" },
+        { id: 13, name: "Mejor caso en directo", desc: "Capacidad docente en vivo" }
+      ]
+    },
+    {
+      title: "Premios Especiales",
+      icon: Star,
+      color: "from-[#C9A227] via-[#E8C547] to-[#C9A227]",
+      categories: [
+        { id: 0, name: "🏅 Gran Premio Óscar OR", desc: "El mejor caso global de todas las categorías", featured: true },
+        { id: 14, name: "Premio del público", desc: "Votación abierta de la comunidad" },
+        { id: 15, name: "Cirujano revelación", desc: "Jóvenes talentos emergentes" },
+        { id: 16, name: "Premio trayectoria", desc: "Reconocimiento honorífico" }
+      ]
+    }
+  ];
+
   return (
-    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black">
-      <div className="text-center">
-        <Award className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
-        <h2 className="text-5xl font-bold text-white mb-4">Categorías</h2>
-        <p className="text-gray-400">Próximamente: 6 categorías + Gran Premio OR</p>
+    <section className="h-screen flex items-center justify-center bg-gradient-to-br from-black via-[#0a0a0a] to-black overflow-y-auto py-20">
+      <div className="max-w-7xl mx-auto px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <Award className="w-16 h-16 text-[#C9A227] mx-auto mb-6" />
+          <h2 className="text-5xl font-bold text-white mb-4">Categorías de Premios</h2>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            22 categorías que reconocen la excelencia quirúrgica desde todos los ángulos
+          </p>
+        </motion.div>
+
+        <div className="space-y-12">
+          {categoryGroups.map((group, groupIdx) => (
+            <motion.div
+              key={groupIdx}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: groupIdx * 0.1 }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${group.color} flex items-center justify-center`}>
+                  <group.icon className="w-5 h-5 text-black" />
+                </div>
+                <h3 className="text-2xl font-bold text-white">{group.title}</h3>
+              </div>
+              
+              <div className={`grid ${group.categories.length > 4 ? 'md:grid-cols-3' : group.categories.length > 3 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4`}>
+                {group.categories.map((cat, idx) => (
+                  <motion.div
+                    key={cat.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: groupIdx * 0.1 + idx * 0.05 }}
+                    className={`p-5 rounded-2xl border ${cat.featured ? 'border-[#C9A227] bg-gradient-to-br from-[#C9A227]/10 to-[#C9A227]/5' : 'border-white/10 bg-white/[0.02]'} backdrop-blur-xl hover:border-[#C9A227]/40 transition-all group`}
+                  >
+                    {!cat.featured && (
+                      <div className="text-xs font-bold text-[#C9A227]/50 mb-2">#{cat.id}</div>
+                    )}
+                    <h4 className={`font-bold mb-2 ${cat.featured ? 'text-[#C9A227] text-lg' : 'text-white text-base'}`}>
+                      {cat.name}
+                    </h4>
+                    <p className="text-sm text-gray-500">{cat.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+          <Link to={createPageUrl("Categories")}>
+            <Button className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold">
+              Ver todas las categorías en detalle
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
