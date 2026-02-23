@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye, Search } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye, Search, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -25,6 +25,7 @@ export default function AdminCases() {
   const [rejectDialog, setRejectDialog] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ["adminCases"],
@@ -46,27 +47,59 @@ export default function AdminCases() {
     setRejectReason("");
   };
 
-  const filtered = filter === "all" ? cases : cases.filter(c => c.status === filter);
+  const filtered = cases.filter(c => {
+    const matchesStatus = filter === "all" || c.status === filter;
+    const matchesSearch = searchQuery === "" ||
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.case_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.created_by.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
 
   return (
-    <div>
-      <div className="flex gap-2 mb-6">
-        {["all", "pending", "approved", "rejected"].map(f => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              filter === f ? "bg-[#c9a84c] text-[#0a0e1a]" : "bg-white/5 text-gray-400 hover:bg-white/10"
-            }`}
-          >
-            {f === "all" ? "Todos" : f === "pending" ? "Pendientes" : f === "approved" ? "Aprobados" : "Rechazados"}
-            {f !== "all" && ` (${cases.filter(c => c.status === f).length})`}
-          </button>
-        ))}
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <FileText className="w-6 h-6 text-[#c9a84c]" />
+        <h2 className="text-xl font-bold text-white">Casos enviados</h2>
+        <Badge variant="outline" className="bg-white/5 border-white/10 text-gray-400">
+          {filtered.length} casos
+        </Badge>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Input
+            placeholder="Buscar por título, ID o usuario..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 bg-white/5 border-white/10 text-white"
+          />
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {["all", "pending", "approved", "rejected"].map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                filter === f ? "bg-[#c9a84c] text-[#0a0e1a]" : "bg-white/5 text-gray-400 hover:bg-white/10"
+              }`}
+            >
+              {f === "all" ? "Todos" : f === "pending" ? "Pendientes" : f === "approved" ? "Aprobados" : "Rechazados"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
-        <Loader2 className="w-5 h-5 text-[#c9a84c] animate-spin mx-auto my-10" />
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 text-[#c9a84c] animate-spin" />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12">
+          <FileText className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+          <p className="text-gray-500">No se encontraron casos</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {filtered.map(c => (
