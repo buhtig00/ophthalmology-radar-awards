@@ -109,11 +109,15 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-[#0f1320] flex">
       <style>{`
         :root {
-          --navy: #0a0e1a;
-          --navy-light: #111827;
-          --gold: #c9a84c;
-          --gold-light: #e8d48b;
-          --gold-dark: #a07c2e;
+          --navy: #0a0a0a;
+          --navy-light: #1a1a1a;
+          --charcoal: #2a2a2a;
+          --gold: #C9A227;
+          --gold-light: #E8C547;
+          --gold-dark: #9A7A1F;
+        }
+        body {
+          background: #000000;
         }
       `}</style>
       {/* Sidebar */}
