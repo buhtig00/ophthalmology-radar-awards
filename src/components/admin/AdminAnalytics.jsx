@@ -79,7 +79,12 @@ export default function AdminAnalytics() {
     queryFn: () => base44.entities.Ticket.list(),
   });
 
-  const isLoading = usersLoading || casesLoading || votesLoading || finalistsLoading || categoriesLoading || ticketsLoading;
+  const { data: juryScores = [], isLoading: juryScoresLoading } = useQuery({
+    queryKey: ["juryScores"],
+    queryFn: () => base44.entities.JuryScore.list(),
+  });
+
+  const isLoading = usersLoading || casesLoading || votesLoading || finalistsLoading || categoriesLoading || ticketsLoading || juryScoresLoading;
 
   // Calculations
   const paidTickets = tickets.filter(t => t.paid);
@@ -157,6 +162,78 @@ export default function AdminAnalytics() {
     const categoryVotes = votes.filter(v => v.category_id === cat.id).length;
     return { name: cat.name, votes: categoryVotes };
   }).sort((a, b) => b.votes - a.votes);
+
+  // Cases by category
+  const casesByCategory = categories.map(cat => {
+    const categoryCases = cases.filter(c => c.category_id === cat.id).length;
+    return { name: cat.name, count: categoryCases };
+  }).sort((a, b) => b.count - a.count);
+
+  // Cases by hospital
+  const hospitalDistribution = cases.reduce((acc, c) => {
+    if (c.hospital) {
+      acc[c.hospital] = (acc[c.hospital] || 0) + 1;
+    }
+    return acc;
+  }, {});
+  const casesByHospital = Object.entries(hospitalDistribution)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Cases by country
+  const countryDistributionCases = cases.reduce((acc, c) => {
+    if (c.country) {
+      acc[c.country] = (acc[c.country] || 0) + 1;
+    }
+    return acc;
+  }, {});
+  const casesByCountry = Object.entries(countryDistributionCases)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // Jury performance by criteria
+  const juryPerformance = [
+    {
+      criteria: "Innovación",
+      average: juryScores.reduce((sum, s) => sum + (s.innovation_score || 0), 0) / juryScores.length || 0,
+      max: 10
+    },
+    {
+      criteria: "Impacto Clínico",
+      average: juryScores.reduce((sum, s) => sum + (s.clinical_impact_score || 0), 0) / juryScores.length || 0,
+      max: 10
+    },
+    {
+      criteria: "Calidad Presentación",
+      average: juryScores.reduce((sum, s) => sum + (s.presentation_quality_score || 0), 0) / juryScores.length || 0,
+      max: 10
+    },
+    {
+      criteria: "Valor Docente",
+      average: juryScores.reduce((sum, s) => sum + (s.teaching_value_score || 0), 0) / juryScores.length || 0,
+      max: 10
+    }
+  ];
+
+  // Top cases by votes
+  const topCasesByVotes = [...cases]
+    .filter(c => c.vote_count > 0)
+    .sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))
+    .slice(0, 10);
+
+  // Top cases by average jury score
+  const caseScores = cases.map(c => {
+    const scores = juryScores.filter(s => s.case_id === c.id);
+    const avgScore = scores.length > 0
+      ? scores.reduce((sum, s) => sum + (s.total_score || 0), 0) / scores.length
+      : 0;
+    return { ...c, avgScore, scoreCount: scores.length };
+  });
+  const topCasesByScore = caseScores
+    .filter(c => c.scoreCount > 0)
+    .sort((a, b) => b.avgScore - a.avgScore)
+    .slice(0, 10);
 
   // Case status distribution
   const caseStatusData = [
@@ -269,8 +346,14 @@ export default function AdminAnalytics() {
             <TabsTrigger value="overview" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
               General
             </TabsTrigger>
-            <TabsTrigger value="engagement" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
-              Participación
+            <TabsTrigger value="voting" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
+              Votación
+            </TabsTrigger>
+            <TabsTrigger value="cases" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
+              Casos
+            </TabsTrigger>
+            <TabsTrigger value="jury" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
+              Jurado
             </TabsTrigger>
             <TabsTrigger value="tickets" className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black">
               Tickets
@@ -406,7 +489,290 @@ export default function AdminAnalytics() {
             </div>
           </TabsContent>
 
-          {/* Engagement Tab */}
+          {/* Voting Tab */}
+          <TabsContent value="voting" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                icon={Vote}
+                label="Total votos"
+                value={votes.length}
+                subValue={`${(votes.length / users.length).toFixed(1)} por usuario`}
+                color="#22C55E"
+              />
+              <StatCard
+                icon={TrendingUp}
+                label="Tasa de participación"
+                value={`${Math.round((votes.length / cases.filter(c => c.status === 'approved').length) * 100)}%`}
+                color="#8B5CF6"
+              />
+              <StatCard
+                icon={BarChart3}
+                label="Promedio votos/caso"
+                value={(votes.length / cases.filter(c => c.status === 'approved').length || 1).toFixed(1)}
+                color="#3B82F6"
+              />
+            </div>
+
+            {/* Voting Trends Over Time */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#C9A227]" />
+                Tendencia de votación - Últimos 14 días
+              </h3>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={dailyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis dataKey="date" stroke="#666" />
+                  <YAxis stroke="#666" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                    labelStyle={{ color: "#fff" }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="votos" stroke="#22C55E" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Votes by Category */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Vote className="w-5 h-5 text-[#C9A227]" />
+                Votos por categoría
+              </h3>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={votesByCategory}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis dataKey="name" stroke="#666" angle={-45} textAnchor="end" height={100} />
+                  <YAxis stroke="#666" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                  />
+                  <Bar dataKey="votes" fill="#C9A227" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Top Cases by Votes */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#C9A227]" />
+                Top 10 casos con más votos
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-2">#</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Caso</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Categoría</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Hospital</th>
+                      <th className="text-right text-gray-400 text-sm font-medium py-3 px-4">Votos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topCasesByVotes.map((caseItem, i) => (
+                      <tr key={caseItem.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                        <td className="py-3 px-2 text-gray-500 font-medium">{i + 1}</td>
+                        <td className="py-3 px-4 text-white text-sm font-medium">{caseItem.title}</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.category_name}</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.hospital || 'N/A'}</td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="text-[#C9A227] font-semibold">{caseItem.vote_count}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Cases Tab */}
+          <TabsContent value="cases" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                icon={FileText}
+                label="Total casos"
+                value={cases.length}
+                color="#3B82F6"
+              />
+              <StatCard
+                icon={CheckCircle2}
+                label="Casos aprobados"
+                value={approvedCases}
+                subValue={`${((approvedCases / cases.length) * 100).toFixed(1)}% del total`}
+                color="#22C55E"
+              />
+              <StatCard
+                icon={Clock}
+                label="Casos pendientes"
+                value={pendingCases}
+                color="#EAB308"
+              />
+            </div>
+
+            {/* Cases by Category */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <PieChartIcon className="w-5 h-5 text-[#C9A227]" />
+                Distribución de casos por categoría
+              </h3>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={casesByCategory}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis dataKey="name" stroke="#666" angle={-45} textAnchor="end" height={100} />
+                  <YAxis stroke="#666" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                  />
+                  <Bar dataKey="count" fill="#3B82F6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Cases by Hospital and Country */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* By Hospital */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-[#C9A227]" />
+                  Top 10 hospitales
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={casesByHospital} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                    <XAxis type="number" stroke="#666" />
+                    <YAxis dataKey="name" type="category" stroke="#666" width={120} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                    />
+                    <Bar dataKey="count" fill="#8B5CF6" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* By Country */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+                <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-[#C9A227]" />
+                  Casos por país
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={casesByCountry}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="count"
+                    >
+                      {casesByCountry.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Jury Tab */}
+          <TabsContent value="jury" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                icon={Users}
+                label="Total evaluaciones"
+                value={juryScores.length}
+                color="#8B5CF6"
+              />
+              <StatCard
+                icon={Award}
+                label="Casos evaluados"
+                value={new Set(juryScores.map(s => s.case_id)).size}
+                color="#3B82F6"
+              />
+              <StatCard
+                icon={BarChart3}
+                label="Puntuación promedio"
+                value={(juryScores.reduce((sum, s) => sum + (s.total_score || 0), 0) / juryScores.length || 0).toFixed(1)}
+                subValue="de 40 puntos"
+                color="#22C55E"
+              />
+            </div>
+
+            {/* Jury Performance by Criteria */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-[#C9A227]" />
+                Rendimiento promedio del jurado por criterio
+              </h3>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={juryPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis dataKey="criteria" stroke="#666" />
+                  <YAxis stroke="#666" domain={[0, 10]} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: "#1a1f2e", border: "1px solid #ffffff20", borderRadius: "8px" }}
+                  />
+                  <Legend />
+                  <Bar dataKey="average" fill="#C9A227" name="Promedio" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {juryPerformance.map((criteria, i) => (
+                  <div key={i} className="p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                    <p className="text-gray-400 text-xs mb-1">{criteria.criteria}</p>
+                    <p className="text-white text-xl font-bold">{criteria.average.toFixed(2)}/10</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Top Cases by Average Score */}
+            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#C9A227]" />
+                Top 10 casos con mejor puntuación promedio
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-2">#</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Caso</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Categoría</th>
+                      <th className="text-left text-gray-400 text-sm font-medium py-3 px-4">Hospital</th>
+                      <th className="text-center text-gray-400 text-sm font-medium py-3 px-4">Evaluaciones</th>
+                      <th className="text-right text-gray-400 text-sm font-medium py-3 px-4">Puntuación</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {topCasesByScore.map((caseItem, i) => (
+                      <tr key={caseItem.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                        <td className="py-3 px-2 text-gray-500 font-medium">{i + 1}</td>
+                        <td className="py-3 px-4 text-white text-sm font-medium">{caseItem.title}</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.category_name}</td>
+                        <td className="py-3 px-4 text-gray-400 text-sm">{caseItem.hospital || 'N/A'}</td>
+                        <td className="py-3 px-4 text-center text-gray-400 text-sm">{caseItem.scoreCount}</td>
+                        <td className="py-3 px-4 text-right">
+                          <span className="text-[#C9A227] font-semibold">{caseItem.avgScore.toFixed(2)}/40</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Engagement Tab (kept for backwards compatibility) */}
           <TabsContent value="engagement" className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <StatCard
