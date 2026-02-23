@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Award, CheckCircle2, Building2, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function VoteConfirmationDialog({ finalist, isOpen, onConfirm, onCancel, isProcessing }) {
-  if (!finalist) return null;
+export default function VoteConfirmationDialog({ item, finalist, isOpen, onConfirm, onCancel, isProcessing }) {
+  const displayItem = item || finalist;
+  if (!displayItem) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>

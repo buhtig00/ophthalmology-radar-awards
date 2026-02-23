@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Award, Eye, EyeOff } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Award, Eye, EyeOff, AlertCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FinalistCard from "@/components/voting/FinalistCard";
+import CaseCard from "@/components/voting/CaseCard";
 import VoteConfirmationDialog from "@/components/voting/VoteConfirmationDialog";
 import { toast } from "sonner";
+import { format, isAfter, isBefore } from "date-fns";
 
 export default function Voting() {
   const queryClient = useQueryClient();
@@ -21,14 +21,22 @@ export default function Voting() {
     if (params.get("category")) setSelectedCategory(params.get("category"));
   }, []);
 
+  const { data: eventConfig } = useQuery({
+    queryKey: ["eventConfig"],
+    queryFn: async () => {
+      const configs = await base44.entities.EventConfig.list();
+      return configs[0];
+    },
+  });
+
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: () => base44.entities.Category.filter({ is_active: true }),
   });
 
-  const { data: finalists = [], isLoading: finalistsLoading } = useQuery({
-    queryKey: ["finalists"],
-    queryFn: () => base44.entities.Finalist.filter({ is_active: true }),
+  const { data: cases = [], isLoading: casesLoading } = useQuery({
+    queryKey: ["finalistCases"],
+    queryFn: () => base44.entities.Case.filter({ status: "finalist" }),
   });
 
   const { data: myVotes = [] } = useQuery({
@@ -43,37 +51,84 @@ export default function Voting() {
     }
   }, [categories, selectedCategory]);
 
+  // Check voting period
+  const isVotingOpen = () => {
+    if (!eventConfig) return true;
+    
+    const now = new Date();
+    const votingStart = eventConfig.voting_start ? new Date(eventConfig.voting_start) : null;
+    const votingEnd = eventConfig.voting_end ? new Date(eventConfig.voting_end) : null;
+
+    if (votingStart && isBefore(now, votingStart)) {
+      return { open: false, reason: "not_started", date: votingStart };
+    }
+    
+    if (votingEnd && isAfter(now, votingEnd)) {
+      return { open: false, reason: "ended", date: votingEnd };
+    }
+
+    if (eventConfig.voting_open === false) {
+      return { open: false, reason: "disabled" };
+    }
+
+    return { open: true };
+  };
+
+  const votingStatus = isVotingOpen();
+
   const voteMutation = useMutation({
-    mutationFn: async (finalist) => {
+    mutationFn: async (caseItem) => {
+      // Rate limiting check - max 1 vote per category
+      const existingVote = myVotes.find(v => v.category_id === caseItem.category_id);
+      if (existingVote) {
+        throw new Error("Ya has votado en esta categoría");
+      }
+
+      // Create vote with anti-fraud data
       await base44.entities.Vote.create({
-        finalist_id: finalist.id,
-        category_id: finalist.category_id,
-        finalist_name: finalist.name,
-        category_name: finalist.category_name,
+        case_id: caseItem.id,
+        category_id: caseItem.category_id,
+        case_title: caseItem.title,
+        category_name: caseItem.category_name,
+        voter_ip: "tracked_by_backend",
+        user_agent: navigator.userAgent,
       });
+
       // Update vote count
-      await base44.entities.Finalist.update(finalist.id, {
-        vote_count: (finalist.vote_count || 0) + 1,
+      await base44.entities.Case.update(caseItem.id, {
+        vote_count: (caseItem.vote_count || 0) + 1,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["myVotes"] });
-      queryClient.invalidateQueries({ queryKey: ["finalists"] });
+      queryClient.invalidateQueries({ queryKey: ["finalistCases"] });
       setConfirmingVote(null);
       toast.success("¡Voto registrado correctamente!");
     },
-    onError: () => {
+    onError: (error) => {
       setConfirmingVote(null);
-      toast.error("Error al votar. Inténtalo de nuevo.");
+      toast.error(error.message || "Error al votar. Inténtalo de nuevo.");
     },
   });
 
-  const handleVote = (finalist) => {
+  const handleVote = (caseItem) => {
     if (!user) {
       base44.auth.redirectToLogin(window.location.href);
       return;
     }
-    setConfirmingVote(finalist);
+
+    if (!votingStatus.open) {
+      if (votingStatus.reason === "not_started") {
+        toast.error(`La votación abrirá el ${format(votingStatus.date, "d 'de' MMMM 'a las' HH:mm")}`);
+      } else if (votingStatus.reason === "ended") {
+        toast.error(`La votación cerró el ${format(votingStatus.date, "d 'de' MMMM")}`);
+      } else {
+        toast.error("La votación está cerrada temporalmente");
+      }
+      return;
+    }
+
+    setConfirmingVote(caseItem);
   };
 
   const confirmVote = () => {
@@ -82,17 +137,65 @@ export default function Voting() {
     }
   };
 
-  const filteredFinalists = finalists.filter(f => f.category_id === selectedCategory);
+  const filteredCases = cases.filter(c => c.category_id === selectedCategory);
   const votedCategoryIds = myVotes.map(v => v.category_id);
-  const myVotedFinalistIds = myVotes.map(v => v.finalist_id);
+  const myVotedCaseIds = myVotes.map(v => v.case_id);
+
+  // Voting status banner
+  const renderVotingBanner = () => {
+    if (!eventConfig) return null;
+
+    if (!votingStatus.open) {
+      return (
+        <div className="mb-6 p-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/5 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-yellow-500 font-semibold mb-1">Votación cerrada</p>
+            {votingStatus.reason === "not_started" && (
+              <p className="text-sm text-gray-400">
+                La votación abrirá el {format(votingStatus.date, "d 'de' MMMM 'de' yyyy 'a las' HH:mm")}
+              </p>
+            )}
+            {votingStatus.reason === "ended" && (
+              <p className="text-sm text-gray-400">
+                La votación cerró el {format(votingStatus.date, "d 'de' MMMM 'de' yyyy")}
+              </p>
+            )}
+            {votingStatus.reason === "disabled" && (
+              <p className="text-sm text-gray-400">
+                La votación está temporalmente deshabilitada por los administradores
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (eventConfig.voting_end) {
+      const endDate = new Date(eventConfig.voting_end);
+      return (
+        <div className="mb-6 p-4 rounded-2xl border border-[#C9A227]/30 bg-[#C9A227]/5 flex items-start gap-3">
+          <Clock className="w-5 h-5 text-[#C9A227] flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-[#C9A227] font-semibold mb-1">Votación abierta</p>
+            <p className="text-sm text-gray-400">
+              Cierra el {format(endDate, "d 'de' MMMM 'de' yyyy 'a las' HH:mm")}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div className="p-6 sm:p-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <div className="flex items-center justify-between gap-4 mb-2">
           <div className="flex items-center gap-3">
-            <Award className="w-7 h-7 text-[#c9a84c]" />
-            <h1 className="text-3xl font-bold text-white">Votar</h1>
+            <Award className="w-7 h-7 text-[#C9A227]" />
+            <h1 className="text-3xl font-bold text-white">Votación Pública</h1>
           </div>
           <Button
             variant="outline"
@@ -113,8 +216,10 @@ export default function Voting() {
             )}
           </Button>
         </div>
-        <p className="text-gray-400">Selecciona una categoría y vota por tu favorito. Un voto por categoría.</p>
+        <p className="text-gray-400">Vota por el mejor caso clínico en cada categoría. Solo un voto por categoría.</p>
       </div>
+
+      {renderVotingBanner()}
 
       {/* Category Tabs */}
       <div className="mb-8 overflow-x-auto pb-2">
@@ -125,7 +230,7 @@ export default function Voting() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                 selectedCategory === cat.id
-                  ? "bg-[#c9a84c] text-[#0a0e1a]"
+                  ? "bg-[#C9A227] text-black"
                   : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -136,25 +241,26 @@ export default function Voting() {
         </div>
       </div>
 
-      {/* Finalists */}
-      {finalistsLoading ? (
+      {/* Cases */}
+      {casesLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-6 h-6 text-[#c9a84c] animate-spin" />
+          <Loader2 className="w-6 h-6 text-[#C9A227] animate-spin" />
         </div>
-      ) : filteredFinalists.length === 0 ? (
+      ) : filteredCases.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-gray-500">No hay finalistas en esta categoría aún.</p>
+          <Award className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-500">No hay casos finalistas en esta categoría aún.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredFinalists.map((finalist) => (
-            <FinalistCard
-              key={finalist.id}
-              finalist={finalist}
-              hasVoted={votedCategoryIds.includes(finalist.category_id)}
-              isSelected={myVotedFinalistIds.includes(finalist.id)}
+          {filteredCases.map((caseItem) => (
+            <CaseCard
+              key={caseItem.id}
+              caseItem={caseItem}
+              hasVoted={votedCategoryIds.includes(caseItem.category_id)}
+              isSelected={myVotedCaseIds.includes(caseItem.id)}
               onVote={handleVote}
-              disabled={voteMutation.isPending}
+              disabled={voteMutation.isPending || !votingStatus.open}
               showVoteCount={showVoteCounts}
             />
           ))}
@@ -162,7 +268,7 @@ export default function Voting() {
       )}
 
       <VoteConfirmationDialog
-        finalist={confirmingVote}
+        item={confirmingVote}
         isOpen={!!confirmingVote}
         onConfirm={confirmVote}
         onCancel={() => setConfirmingVote(null)}
