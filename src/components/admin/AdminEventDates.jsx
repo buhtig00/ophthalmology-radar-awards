@@ -54,6 +54,8 @@ export default function AdminEventDates() {
       voting_end: formData.get("voting_end") ? new Date(formData.get("voting_end")).toISOString() : null,
       voting_open: formData.get("voting_open") === "on",
       show_rankings: formData.get("show_rankings") === "on",
+      streaming_price_cents: parseInt(formData.get("streaming_price_cents")) || 2900,
+      vip_price_cents: parseInt(formData.get("vip_price_cents")) || 15000,
     };
 
     if (config) {
@@ -167,6 +169,39 @@ export default function AdminEventDates() {
                   defaultValue={formatDateForInput(config?.event_date)}
                   className="bg-white/5 border-white/10 text-white"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Precios de Pases */}
+          <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
+            <h4 className="text-white font-semibold mb-4">Precios de Pases</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-gray-300">Precio Streaming (centavos)</Label>
+                <Input
+                  name="streaming_price_cents"
+                  type="number"
+                  defaultValue={config?.streaming_price_cents || 2900}
+                  placeholder="2900"
+                  className="bg-white/5 border-white/10 text-white"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {((config?.streaming_price_cents || 2900) / 100).toFixed(2)}€
+                </p>
+              </div>
+              <div>
+                <Label className="text-gray-300">Precio VIP (centavos)</Label>
+                <Input
+                  name="vip_price_cents"
+                  type="number"
+                  defaultValue={config?.vip_price_cents || 15000}
+                  placeholder="15000"
+                  className="bg-white/5 border-white/10 text-white"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {((config?.vip_price_cents || 15000) / 100).toFixed(2)}€
+                </p>
               </div>
             </div>
           </div>

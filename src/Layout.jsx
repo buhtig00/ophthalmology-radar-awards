@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { name: "Votar", page: "Voting", icon: Vote },
   { name: "Rankings", page: "Rankings", icon: BarChart3 },
   { name: "Enviar Caso", page: "SubmitCase", icon: Upload },
+  { name: "Pases", page: "BuyTicket", icon: Eye },
   { name: "Mi Perfil", page: "Profile", icon: User },
 ];
 
