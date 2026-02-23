@@ -17,6 +17,7 @@ export default function Home() {
     <div className="relative bg-black overflow-x-hidden">
       {/* All sections now scroll normally */}
       <HeroSlide />
+      <InstitutionsSlide />
       <ProblemaSlide />
       <VisionSlide />
       <TerritorioSlide />
@@ -126,6 +127,86 @@ function HeroSlide() {
       </div>
 
 
+    </section>
+  );
+}
+
+// Institutions Section
+function InstitutionsSlide() {
+  const institutions = [
+    { name: "Hospital Clínic Barcelona", logo: "https://ui-avatars.com/api/?name=HC&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Hospital La Paz", logo: "https://ui-avatars.com/api/?name=LP&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Hospital Ramón y Cajal", logo: "https://ui-avatars.com/api/?name=RC&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Instituto de Oftalmología", logo: "https://ui-avatars.com/api/?name=IO&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Hospital de Sant Pau", logo: "https://ui-avatars.com/api/?name=SP&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "IMO Barcelona", logo: "https://ui-avatars.com/api/?name=IMO&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Vissum", logo: "https://ui-avatars.com/api/?name=VS&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Clínica Baviera", logo: "https://ui-avatars.com/api/?name=CB&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Hospital Lisboa Central", logo: "https://ui-avatars.com/api/?name=HL&background=1a1a1a&color=C9A227&size=120&bold=true" },
+    { name: "Hospital Porto", logo: "https://ui-avatars.com/api/?name=HP&background=1a1a1a&color=C9A227&size=120&bold=true" },
+  ];
+
+  return (
+    <section className="py-16 sm:py-24 px-4 sm:px-8 bg-gradient-to-b from-black to-[#0a0a0a] border-y border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <p className="text-[#C9A227] text-sm font-semibold tracking-wider uppercase mb-3">
+            Respaldado por líderes en oftalmología
+          </p>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Instituciones Representadas
+          </h3>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Los mejores hospitales y centros de referencia de España y Portugal participan en los premios
+          </p>
+        </motion.div>
+
+        {/* Logos Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
+          {institutions.map((institution, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              className="flex items-center justify-center p-6 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
+            >
+              <img 
+                src={institution.logo} 
+                alt={institution.name}
+                className="w-20 h-20 object-contain opacity-60 group-hover:opacity-100 transition-opacity filter grayscale group-hover:grayscale-0"
+                title={institution.name}
+              />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Stats bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6"
+        >
+          {[
+            { value: "50+", label: "Centros hospitalarios" },
+            { value: "1,200+", label: "Oftalmólogos" },
+            { value: "2", label: "Países" },
+            { value: "22", label: "Categorías" }
+          ].map((stat, i) => (
+            <div key={i} className="text-center p-6 rounded-2xl border border-white/5 bg-white/[0.01]">
+              <div className="text-3xl sm:text-4xl font-bold text-[#C9A227] mb-2">{stat.value}</div>
+              <div className="text-sm text-gray-500">{stat.label}</div>
+            </div>
+          ))}
+        </motion.div>
+      </div>
     </section>
   );
 }
