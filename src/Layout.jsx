@@ -233,11 +233,9 @@ export default function Layout({ children, currentPageName }) {
       {/* Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#0a0e1a] border-r border-white/5 fixed inset-y-0">
         <div className="p-5 border-b border-white/5">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-3">
+          <Link to={createPageUrl("Home")} className="flex flex-col items-center gap-2">
             <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699c08734be772c3bc57b27f/6fd832a21_ophthalmologyrada2r.png" alt="Ophthalmology Radar" className="h-10" style={{filter: 'brightness(0) saturate(100%) invert(67%) sepia(45%) saturate(514%) hue-rotate(8deg) brightness(96%) contrast(86%)'}} />
-            <div>
-              <div className="text-[#c9a84c] text-xs font-medium tracking-widest">AWARDS 2026</div>
-            </div>
+            <div className="text-[#c9a84c] text-xs font-medium tracking-widest">AWARDS 2026</div>
           </Link>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">

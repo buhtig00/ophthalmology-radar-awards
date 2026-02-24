@@ -58,12 +58,12 @@ import Home from './pages/Home';
 import JuryEvaluation from './pages/JuryEvaluation';
 import LiveStream from './pages/LiveStream';
 import MyCases from './pages/MyCases';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Profile from './pages/Profile';
 import Rankings from './pages/Rankings';
 import SubmitCase from './pages/SubmitCase';
-import Voting from './pages/Voting';
-import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Voting from './pages/Voting';
 import __Layout from './Layout.jsx';
 
 
@@ -79,12 +79,12 @@ export const PAGES = {
     "JuryEvaluation": JuryEvaluation,
     "LiveStream": LiveStream,
     "MyCases": MyCases,
+    "PrivacyPolicy": PrivacyPolicy,
     "Profile": Profile,
     "Rankings": Rankings,
     "SubmitCase": SubmitCase,
-    "Voting": Voting,
-    "PrivacyPolicy": PrivacyPolicy,
     "TermsOfService": TermsOfService,
+    "Voting": Voting,
 }
 
 export const pagesConfig = {
