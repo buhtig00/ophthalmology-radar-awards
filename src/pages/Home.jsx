@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import OnboardingTour from "@/components/OnboardingTour";
+import ScrollNavigation from "@/components/home/ScrollNavigation";
 
 // Lazy load sections for better performance
 const HeroSection = lazy(() => import("@/components/home/HeroSection"));
@@ -15,9 +16,14 @@ export default function Home() {
   return (
     <div className="relative bg-black overflow-x-hidden">
       <OnboardingTour />
+      <ScrollNavigation />
       <Suspense fallback={<LoadingSpinner />}>
-        <HeroSection />
-        <InstitutionsSection />
+        <div id="hero">
+          <HeroSection />
+        </div>
+        <div id="institutions">
+          <InstitutionsSection />
+        </div>
       </Suspense>
     </div>
   );
