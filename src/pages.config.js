@@ -64,6 +64,7 @@ import Rankings from './pages/Rankings';
 import SubmitCase from './pages/SubmitCase';
 import TermsOfService from './pages/TermsOfService';
 import Voting from './pages/Voting';
+import Winners from './pages/Winners';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +86,7 @@ export const PAGES = {
     "SubmitCase": SubmitCase,
     "TermsOfService": TermsOfService,
     "Voting": Voting,
+    "Winners": Winners,
 }
 
 export const pagesConfig = {
