@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye, Search, FileText, Award, Users, Video, Paperclip, Building2, MapPin } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Loader2, ExternalLink, Eye, Search, FileText, Award, Users, Video, Paperclip, Building2, MapPin, Link2, Github } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
 } from "@/components/ui/dialog";
+import GitHubActivity from "./GitHubActivity";
 
 const STATUS_STYLE = {
   pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -29,11 +30,13 @@ export default function AdminCases() {
   const [rejectDialog, setRejectDialog] = useState(null);
   const [detailDialog, setDetailDialog] = useState(null);
   const [assignDialog, setAssignDialog] = useState(null);
+  const [linkGithubDialog, setLinkGithubDialog] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [selectedJury, setSelectedJury] = useState([]);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [githubConfig, setGithubConfig] = useState({ projectId: "", repo: "" });
+  const [githubIssueNumber, setGithubIssueNumber] = useState("");
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ["adminCases"],
@@ -70,20 +73,29 @@ export default function AdminCases() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data, caseData }) => {
+    mutationFn: async ({ id, data, caseData, createGithubIssue = false }) => {
       const result = await base44.entities.Case.update(id, data);
       
-      // Sync to GitHub if configured
-      if (githubConfig.projectId && githubConfig.repo) {
+      // Create GitHub issue if marking as finalist and configured
+      if (createGithubIssue && githubConfig.projectId && githubConfig.repo && !caseData.github_issue_number) {
         try {
-          await base44.functions.invoke("githubSyncCase", {
+          const { data: ghData } = await base44.functions.invoke("githubSyncCase", {
             caseData: { ...caseData, ...data, id },
             action: "create",
             projectId: githubConfig.projectId,
             repo: githubConfig.repo
           });
+          
+          if (ghData?.success && ghData?.issue) {
+            await base44.entities.Case.update(id, {
+              github_issue_number: ghData.issue.number,
+              github_issue_url: ghData.issue.url
+            });
+            toast.success("Issue de GitHub creado");
+          }
         } catch (error) {
           console.error("GitHub sync error:", error);
+          toast.error("Error al crear issue de GitHub");
         }
       }
       
@@ -96,6 +108,21 @@ export default function AdminCases() {
     },
   });
 
+  const linkGithubMutation = useMutation({
+    mutationFn: async ({ caseId, issueNumber, issueUrl }) => {
+      return await base44.entities.Case.update(caseId, {
+        github_issue_number: parseInt(issueNumber),
+        github_issue_url: issueUrl
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminCases"] });
+      toast.success("Caso vinculado con GitHub");
+      setLinkGithubDialog(null);
+      setGithubIssueNumber("");
+    },
+  });
+
   const approve = (c) => updateMutation.mutate({ 
     id: c.id, 
     data: { 
@@ -105,13 +132,17 @@ export default function AdminCases() {
     caseData: c
   });
 
-  const markAsFinalist = (c) => updateMutation.mutate({ 
-    id: c.id, 
-    data: { 
-      status: "finalist"
-    },
-    caseData: c
-  });
+  const markAsFinalist = (c) => {
+    const shouldCreateIssue = githubConfig.projectId && githubConfig.repo && !c.github_issue_number;
+    updateMutation.mutate({ 
+      id: c.id, 
+      data: { 
+        status: "finalist"
+      },
+      caseData: c,
+      createGithubIssue: shouldCreateIssue
+    });
+  };
 
   const changeStatus = (c, newStatus) => updateMutation.mutate({
     id: c.id,
@@ -256,6 +287,17 @@ export default function AdminCases() {
                       <Eye className="w-3.5 h-3.5 mr-1" /> Ver detalles
                     </Button>
                     
+                    {!c.github_issue_number && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="border-white/10 text-gray-400 hover:bg-white/5 h-8"
+                        onClick={() => setLinkGithubDialog(c)}
+                      >
+                        <Link2 className="w-3.5 h-3.5 mr-1" /> Vincular GitHub
+                      </Button>
+                    )}
+                    
                     {c.status === "pending" && (
                       <>
                         <Button 
@@ -338,6 +380,9 @@ export default function AdminCases() {
                 </div>
                 <h3 className="text-xl font-bold text-white">{detailDialog.title}</h3>
               </div>
+
+              {/* GitHub Activity */}
+              <GitHubActivity caseData={detailDialog} />
 
               {detailDialog.description && (
                 <div>
@@ -467,6 +512,71 @@ export default function AdminCases() {
               disabled={!rejectReason}
             >
               Confirmar Rechazo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Link GitHub Issue Dialog */}
+      <Dialog open={!!linkGithubDialog} onOpenChange={() => { setLinkGithubDialog(null); setGithubIssueNumber(""); }}>
+        <DialogContent className="bg-[#0a0e1a] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Github className="w-5 h-5 text-[#C9A227]" />
+              Vincular con GitHub Issue
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Introduce el número del issue existente para vincularlo con este caso
+            </DialogDescription>
+          </DialogHeader>
+          {linkGithubDialog && (
+            <div className="space-y-4">
+              <div>
+                <Label className="text-gray-400 text-sm mb-2 block">Número del Issue</Label>
+                <Input
+                  type="number"
+                  value={githubIssueNumber}
+                  onChange={(e) => setGithubIssueNumber(e.target.value)}
+                  placeholder="123"
+                  className="bg-white/5 border-white/10 text-white"
+                />
+                {githubConfig.repo && (
+                  <p className="text-gray-500 text-xs mt-2">
+                    Repositorio: {githubConfig.repo}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              className="border-white/10 text-gray-300" 
+              onClick={() => { setLinkGithubDialog(null); setGithubIssueNumber(""); }}
+            >
+              Cancelar
+            </Button>
+            <Button 
+              className="bg-[#C9A227] hover:bg-[#E8C547] text-black" 
+              onClick={() => {
+                if (linkGithubDialog && githubIssueNumber && githubConfig.repo) {
+                  linkGithubMutation.mutate({
+                    caseId: linkGithubDialog.id,
+                    issueNumber: githubIssueNumber,
+                    issueUrl: `https://github.com/${githubConfig.repo}/issues/${githubIssueNumber}`
+                  });
+                }
+              }}
+              disabled={!githubIssueNumber || !githubConfig.repo || linkGithubMutation.isPending}
+            >
+              {linkGithubMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Vinculando...
+                </>
+              ) : (
+                "Vincular Issue"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

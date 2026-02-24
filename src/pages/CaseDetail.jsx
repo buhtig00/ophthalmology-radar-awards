@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import GitHubActivity from "../components/admin/GitHubActivity";
+import CommentSection from "../components/voting/CommentSection";
 
 const STATUS_CONFIG = {
   pending: { label: "En revisión", icon: Clock, color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
@@ -153,6 +155,11 @@ export default function CaseDetail() {
             </div>
           </div>
         </div>
+
+        {/* GitHub Activity */}
+        {(isAdmin || isOwner) && (
+          <GitHubActivity caseData={caseData} />
+        )}
 
         {/* Video */}
         {caseData.video_url && (
