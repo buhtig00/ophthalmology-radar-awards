@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 
@@ -48,57 +50,53 @@ const InstitutionsSection = React.memo(() => {
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
-            {partners.length > 0 ? (
-              partners.map((partner, i) => (
-                <motion.div
-                  key={partner.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex items-center justify-center p-6 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
-                >
-                  {partner.logo_url ? (
-                    <img 
-                      src={partner.logo_url} 
-                      alt={partner.name}
-                      className="w-full h-20 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
-                      loading="lazy"
-                      title={partner.name}
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <div className="text-[#C9A227] font-bold text-sm">{partner.name}</div>
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-8">
-                <p className="mb-2">Cargando instituciones...</p>
-              </div>
-            )}
+        ) : partners.length > 0 ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            {partners.slice(0, 6).map((partner, i) => (
+              <motion.div
+                key={partner.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="flex items-center justify-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
+              >
+                {partner.logo_url ? (
+                  <img 
+                    src={partner.logo_url} 
+                    alt={partner.name}
+                    className="w-full h-16 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+                    loading="lazy"
+                    title={partner.name}
+                  />
+                ) : (
+                  <div className="text-center">
+                    <div className="text-[#C9A227] font-bold text-xs">{partner.name}</div>
+                  </div>
+                )}
+              </motion.div>
+            ))}
           </div>
-        )}
+        ) : null}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4"
         >
           {[
-            { value: "50+", label: "Centros hospitalarios" },
-            { value: "1,200+", label: "Oftalmólogos" },
-            { value: "2", label: "Países" },
-            { value: "22", label: "Categorías" }
+            { value: "22", label: "Categorías", link: "Categories" },
+            { value: "Rankings", label: "Ver Rankings", link: "Rankings" },
+            { value: "Galería", label: "Casos Aprobados", link: "CaseGallery" },
+            { value: "Calendario", label: "Fechas Clave", link: "EventCalendar" }
           ].map((stat, i) => (
-            <div key={i} className="text-center p-6 rounded-2xl border border-white/5 bg-white/[0.01]">
-              <div className="text-3xl sm:text-4xl font-bold text-[#C9A227] mb-2">{stat.value}</div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
-            </div>
+            <Link key={i} to={createPageUrl(stat.link)}>
+              <div className="text-center p-5 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/30 transition-all cursor-pointer group">
+                <div className="text-2xl sm:text-3xl font-bold text-[#C9A227] mb-2 group-hover:scale-110 transition-transform">{stat.value}</div>
+                <div className="text-xs text-gray-500 group-hover:text-gray-400">{stat.label}</div>
+              </div>
+            </Link>
           ))}
         </motion.div>
       </div>

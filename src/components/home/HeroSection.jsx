@@ -58,7 +58,7 @@ const HeroSection = React.memo(() => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link to={createPageUrl("SubmitCase")}>
             <Button size="lg" className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold px-10 h-14 text-lg gap-3 group shadow-2xl shadow-[#C9A227]/20">
@@ -67,30 +67,11 @@ const HeroSection = React.memo(() => {
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
-          <Link to={createPageUrl("Categories")}>
+          <Link to={createPageUrl("Voting")}>
             <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 hover:text-white backdrop-blur-xl px-10 h-14 text-lg bg-black/20">
-              Explorar Categorías
+              Ver Casos y Votar
             </Button>
           </Link>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
-        >
-          {[
-            { icon: Video, label: "Proyección de cirugías finalistas" },
-            { icon: Users, label: "Debate clínico en vivo" },
-            { icon: Trophy, label: "Entrega de premios" },
-            { icon: MessageSquare, label: "Networking exclusivo" },
-          ].map((item, i) => (
-            <div key={i} className="p-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-xl">
-              <item.icon className="w-6 h-6 text-[#C9A227] mx-auto mb-3" />
-              <p className="text-sm text-gray-400">{item.label}</p>
-            </div>
-          ))}
         </motion.div>
       </div>
     </section>
