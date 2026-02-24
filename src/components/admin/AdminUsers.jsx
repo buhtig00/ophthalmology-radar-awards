@@ -23,7 +23,7 @@ export default function AdminUsers() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("user");
+  const [inviteRole, setInviteRole] = useState(ROLES.USER);
   const [isInviting, setIsInviting] = useState(false);
 
   const { data: users = [], isLoading } = useQuery({

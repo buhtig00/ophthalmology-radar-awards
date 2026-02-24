@@ -40,6 +40,14 @@ const ADMIN_ITEMS = [
   { name: "Admin Panel", page: "Admin", icon: Settings },
 ];
 
+const MODERATOR_ITEMS = [
+  { name: "Revisar Casos", page: "Admin", icon: Settings },
+];
+
+const JURY_ITEMS = [
+  { name: "Evaluar Casos", page: "JuryEvaluation", icon: Award },
+];
+
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -49,12 +57,20 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const isAdmin = user?.role === "admin";
-  const allItems = isAdmin ? [...NAV_ITEMS, ...ADMIN_ITEMS] : NAV_ITEMS;
+  const isModerator = user?.role === "moderator";
+  const isJury = user?.role === "jury";
+  
+  // Build navigation based on role
+  const roleItems = isAdmin ? ADMIN_ITEMS : 
+                   isModerator ? MODERATOR_ITEMS : 
+                   isJury ? JURY_ITEMS : [];
+  
+  const allItems = [...NAV_ITEMS, ...roleItems];
   const allSidebarItems = [
     ...NAV_ITEMS,
     ...DROPDOWN_ITEMS.items,
     ...USER_ITEMS,
-    ...(isAdmin ? ADMIN_ITEMS : [])
+    ...roleItems
   ];
 
   if (currentPageName === "Home") {
@@ -117,7 +133,7 @@ export default function Layout({ children, currentPageName }) {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {isAdmin && ADMIN_ITEMS.map(item => (
+              {roleItems.map(item => (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
@@ -176,9 +192,9 @@ export default function Layout({ children, currentPageName }) {
                   </Link>
                 ))}
               </div>
-              {isAdmin && (
+              {roleItems.length > 0 && (
                 <div className="border-t border-white/5 my-2 pt-2">
-                  {ADMIN_ITEMS.map(item => (
+                  {roleItems.map(item => (
                     <Link
                       key={item.page}
                       to={createPageUrl(item.page)}
@@ -249,7 +265,11 @@ export default function Layout({ children, currentPageName }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white text-sm truncate">{user.full_name || user.email}</p>
-                <p className="text-gray-500 text-xs truncate">{user.email}</p>
+                <p className="text-gray-500 text-xs truncate">
+                  {user.role === 'admin' ? 'Administrador' : 
+                   user.role === 'moderator' ? 'Moderador' : 
+                   user.role === 'jury' ? 'Jurado' : 'Usuario'}
+                </p>
               </div>
               <Button size="icon" variant="ghost" className="text-gray-500 hover:text-white h-8 w-8" onClick={() => base44.auth.logout()}>
                 <LogOut className="w-3.5 h-3.5" />
