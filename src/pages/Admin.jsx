@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Settings, Loader2 } from "lucide-react";
+import { hasAnyRole, ROLES } from "@/components/lib/permissions";
+import AccessDenied from "@/components/AccessDenied";
 import AdminAnalytics from "@/components/admin/AdminAnalytics";
 import AdminUsers from "@/components/admin/AdminUsers";
 import AdminCases from "@/components/admin/AdminCases";
@@ -39,15 +41,11 @@ export default function Admin() {
     );
   }
 
-  if (user?.role !== "admin") {
-    return (
-      <div className="p-6 sm:p-8 max-w-4xl mx-auto text-center py-20">
-        <Settings className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-        <h2 className="text-white text-xl font-semibold mb-2">Acceso restringido</h2>
-        <p className="text-gray-400">Solo administradores pueden acceder a esta página</p>
-      </div>
-    );
+  if (!hasAnyRole(user, [ROLES.ADMIN, ROLES.MODERATOR])) {
+    return <AccessDenied requiredRole="Administrador o Moderador" />;
   }
+
+  const isAdmin = user.role === ROLES.ADMIN;
 
   return (
     <div className="p-6 sm:p-8 max-w-7xl mx-auto">
@@ -59,139 +57,147 @@ export default function Admin() {
         <p className="text-gray-400">Gestiona usuarios, casos, finalistas y analiza métricas</p>
       </div>
 
-      <Tabs defaultValue="analytics" className="space-y-6">
+      <Tabs defaultValue="cases" className="space-y-6">
         <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
-          <TabsTrigger 
-            value="analytics"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Análisis
-          </TabsTrigger>
-          <TabsTrigger 
-            value="dates"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Fechas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="categories"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Categorías
-          </TabsTrigger>
           <TabsTrigger 
             value="cases"
             className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
             Casos
           </TabsTrigger>
-          <TabsTrigger 
-            value="finalists"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Finalistas
-          </TabsTrigger>
-          <TabsTrigger 
-            value="jury"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Jurado
-          </TabsTrigger>
-          <TabsTrigger 
-            value="partners"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Partners
-          </TabsTrigger>
-          <TabsTrigger 
-            value="users"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Usuarios
-          </TabsTrigger>
-          <TabsTrigger 
-            value="export"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Exportar
-          </TabsTrigger>
-          <TabsTrigger 
-            value="emails"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Emails
-          </TabsTrigger>
-          <TabsTrigger 
-            value="notifications"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Notificaciones
-          </TabsTrigger>
-          <TabsTrigger 
-            value="tickets"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            Tickets
-          </TabsTrigger>
-          <TabsTrigger 
-            value="github"
-            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-          >
-            GitHub
-          </TabsTrigger>
+          {isAdmin && (
+            <>
+              <TabsTrigger 
+                value="analytics"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Análisis
+              </TabsTrigger>
+              <TabsTrigger 
+                value="dates"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Fechas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="categories"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Categorías
+              </TabsTrigger>
+              <TabsTrigger 
+                value="finalists"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Finalistas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="jury"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Jurado
+              </TabsTrigger>
+              <TabsTrigger 
+                value="partners"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Partners
+              </TabsTrigger>
+              <TabsTrigger 
+                value="users"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Usuarios
+              </TabsTrigger>
+              <TabsTrigger 
+                value="export"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Exportar
+              </TabsTrigger>
+              <TabsTrigger 
+                value="emails"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Emails
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Notificaciones
+              </TabsTrigger>
+              <TabsTrigger 
+                value="tickets"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                Tickets
+              </TabsTrigger>
+              <TabsTrigger 
+                value="github"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                GitHub
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
-
-        <TabsContent value="analytics">
-          <AdminAnalytics />
-        </TabsContent>
-
-        <TabsContent value="dates">
-          <AdminEventDates />
-        </TabsContent>
-
-        <TabsContent value="categories">
-          <AdminCategories />
-        </TabsContent>
 
         <TabsContent value="cases">
           <AdminCases />
         </TabsContent>
 
-        <TabsContent value="finalists">
-          <AdminFinalists />
-        </TabsContent>
+        {isAdmin && (
+          <>
+            <TabsContent value="analytics">
+              <AdminAnalytics />
+            </TabsContent>
 
-        <TabsContent value="jury">
-          <AdminJury />
-        </TabsContent>
+            <TabsContent value="dates">
+              <AdminEventDates />
+            </TabsContent>
 
-        <TabsContent value="partners">
-          <AdminPartners />
-        </TabsContent>
+            <TabsContent value="categories">
+              <AdminCategories />
+            </TabsContent>
 
-        <TabsContent value="users">
-          <AdminUsers />
-        </TabsContent>
+            <TabsContent value="finalists">
+              <AdminFinalists />
+            </TabsContent>
 
-        <TabsContent value="export">
-          <AdminExport />
-        </TabsContent>
+            <TabsContent value="jury">
+              <AdminJury />
+            </TabsContent>
 
-        <TabsContent value="emails">
-          <AdminEmailLogs />
-        </TabsContent>
+            <TabsContent value="partners">
+              <AdminPartners />
+            </TabsContent>
 
-        <TabsContent value="notifications">
-          <AdminNotifications />
-        </TabsContent>
+            <TabsContent value="users">
+              <AdminUsers />
+            </TabsContent>
 
-        <TabsContent value="tickets">
-          <AdminTickets />
-        </TabsContent>
+            <TabsContent value="export">
+              <AdminExport />
+            </TabsContent>
 
-        <TabsContent value="github">
-          <AdminGitHub />
-        </TabsContent>
+            <TabsContent value="emails">
+              <AdminEmailLogs />
+            </TabsContent>
+
+            <TabsContent value="notifications">
+              <AdminNotifications />
+            </TabsContent>
+
+            <TabsContent value="tickets">
+              <AdminTickets />
+            </TabsContent>
+
+            <TabsContent value="github">
+              <AdminGitHub />
+            </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );
