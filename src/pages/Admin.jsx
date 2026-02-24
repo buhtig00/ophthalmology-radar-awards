@@ -18,6 +18,7 @@ import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminTickets from "@/components/admin/AdminTickets";
 import AdminGitHub from "@/components/admin/AdminGitHub";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminLiveControl from "@/components/admin/AdminLiveControl";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -146,6 +147,12 @@ export default function Admin() {
               >
                 🔗 GitHub
               </TabsTrigger>
+              <TabsTrigger 
+                value="live"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                📺 Evento en Vivo
+              </TabsTrigger>
             </>
           )}
         </TabsList>
@@ -206,6 +213,10 @@ export default function Admin() {
 
             <TabsContent value="github">
               <AdminGitHub />
+            </TabsContent>
+
+            <TabsContent value="live">
+              <AdminLiveControl />
             </TabsContent>
           </>
         )}

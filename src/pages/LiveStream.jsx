@@ -6,9 +6,12 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Tv, ExternalLink, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Lock, Tv, ExternalLink, CheckCircle2, Clock, AlertCircle, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { format, isBefore, isAfter } from "date-fns";
+import LiveChat from "@/components/live/LiveChat";
+import AnnouncementsBanner from "@/components/live/AnnouncementsBanner";
+import StreamPlayer from "@/components/live/StreamPlayer";
 
 export default function LiveStream() {
   const [user, setUser] = useState(null);
@@ -182,7 +185,7 @@ export default function LiveStream() {
 
   // Event is live - show stream
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto">
+    <div className="p-6 sm:p-8 max-w-[1800px] mx-auto">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -194,83 +197,89 @@ export default function LiveStream() {
               Acceso Autorizado
             </Badge>
           </div>
+          <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <Users className="w-4 h-4" />
+            <span>Streaming en vivo</span>
+          </div>
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">
           Gala Ophthalmology Radar Awards 2026
         </h1>
         <p className="text-gray-400">
-          Transmisión en vivo desde {eventConfig?.event_name || "el evento"}
+          Celebrando la excelencia en cirugía oftalmológica
         </p>
       </div>
 
-      {/* Video Player */}
-      <Card className="bg-black border-white/10 mb-6">
-        <CardContent className="p-0">
-          <div className="aspect-video bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative">
-            {/* Placeholder - replace with actual streaming embed */}
-            <div className="text-center">
-              <Tv className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 mb-2">
-                Reproductor de transmisión en vivo
-              </p>
-              <p className="text-gray-600 text-sm">
-                Integra tu servicio de streaming aquí (YouTube Live, Vimeo, etc.)
-              </p>
-              {/* Example iframe for YouTube Live:
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/LIVE_VIDEO_ID"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-              */}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Announcements */}
+      <AnnouncementsBanner />
 
-      {/* Chat or Info Panel */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2 bg-white/[0.02] border-white/10">
-          <CardContent className="p-6">
-            <h3 className="text-white font-semibold text-lg mb-4">
-              Sobre la Gala
-            </h3>
-            <div className="space-y-3 text-gray-400 text-sm">
-              <p>
-                Bienvenido a la primera edición de los Ophthalmology Radar Awards, 
-                donde celebramos la excelencia en cirugía oftalmológica.
-              </p>
-              <p>
-                Durante la gala descubriremos a los ganadores de cada categoría, 
-                reconociendo los mejores casos clínicos y técnicas quirúrgicas innovadoras.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Main Content Grid */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Video Player + Info */}
+        <div className="lg:col-span-2 space-y-6">
+          <StreamPlayer isAdmin={user?.role === "admin"} />
 
-        <Card className="bg-white/[0.02] border-white/10">
-          <CardContent className="p-6">
-            <h3 className="text-white font-semibold text-lg mb-4">
-              Recursos
-            </h3>
-            <div className="space-y-3">
-              <Link to={createPageUrl("Rankings")}>
-                <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 justify-start">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Ver Rankings
-                </Button>
-              </Link>
-              <Link to={createPageUrl("Categories")}>
-                <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 justify-start">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Categorías
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="bg-white/[0.02] border-white/10">
+            <CardContent className="p-6">
+              <h3 className="text-white font-semibold text-lg mb-4">
+                Sobre la Gala
+              </h3>
+              <div className="space-y-3 text-gray-400 text-sm">
+                <p>
+                  Bienvenido a la primera edición de los Ophthalmology Radar
+                  Awards, donde celebramos la excelencia en cirugía
+                  oftalmológica.
+                </p>
+                <p>
+                  Durante la gala descubriremos a los ganadores de cada
+                  categoría, reconociendo los mejores casos clínicos y técnicas
+                  quirúrgicas innovadoras.
+                </p>
+              </div>
+
+              <div className="mt-6 pt-6 border-t border-white/10">
+                <h4 className="text-white font-medium mb-3">Enlaces Rápidos</h4>
+                <div className="flex flex-wrap gap-2">
+                  <Link to={createPageUrl("Rankings")}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white/10 text-white hover:bg-white/5"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Rankings
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl("Categories")}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white/10 text-white hover:bg-white/5"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Categorías
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl("CaseGallery")}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-white/10 text-white hover:bg-white/5"
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Casos
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Live Chat */}
+        <div>
+          <LiveChat user={user} />
+        </div>
       </div>
     </div>
   );
