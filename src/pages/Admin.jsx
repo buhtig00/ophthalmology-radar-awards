@@ -17,6 +17,7 @@ import AdminExport from "@/components/admin/AdminExport";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminTickets from "@/components/admin/AdminTickets";
 import AdminGitHub from "@/components/admin/AdminGitHub";
+import AdminDashboard from "@/components/admin/AdminDashboard";
 
 export default function Admin() {
   const [user, setUser] = useState(null);
@@ -57,91 +58,101 @@ export default function Admin() {
         <p className="text-gray-400">Gestiona usuarios, casos, finalistas y analiza métricas</p>
       </div>
 
-      <Tabs defaultValue="cases" className="space-y-6">
+      <Tabs defaultValue="dashboard" className="space-y-6">
         <TabsList className="bg-white/5 border border-white/10 p-1 w-full overflow-x-auto flex">
+          <TabsTrigger 
+            value="dashboard"
+            className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+          >
+            📊 Dashboard
+          </TabsTrigger>
           <TabsTrigger 
             value="cases"
             className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
           >
-            Casos
+            📋 Casos
           </TabsTrigger>
           {isAdmin && (
             <>
               <TabsTrigger 
-                value="analytics"
+                value="users"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Análisis
-              </TabsTrigger>
-              <TabsTrigger 
-                value="dates"
-                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-              >
-                Fechas
+                👥 Usuarios
               </TabsTrigger>
               <TabsTrigger 
                 value="categories"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Categorías
-              </TabsTrigger>
-              <TabsTrigger 
-                value="finalists"
-                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-              >
-                Finalistas
+                🏆 Categorías
               </TabsTrigger>
               <TabsTrigger 
                 value="jury"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Jurado
+                ⚖️ Jurado
               </TabsTrigger>
               <TabsTrigger 
                 value="partners"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Partners
+                🤝 Partners
               </TabsTrigger>
               <TabsTrigger 
-                value="users"
+                value="finalists"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Usuarios
+                ⭐ Finalistas
               </TabsTrigger>
               <TabsTrigger 
-                value="export"
+                value="analytics"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Exportar
+                📈 Análisis
               </TabsTrigger>
               <TabsTrigger 
-                value="emails"
+                value="dates"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Emails
-              </TabsTrigger>
-              <TabsTrigger 
-                value="notifications"
-                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
-              >
-                Notificaciones
+                📅 Fechas
               </TabsTrigger>
               <TabsTrigger 
                 value="tickets"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                Tickets
+                🎫 Tickets
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                📧 Notificaciones
+              </TabsTrigger>
+              <TabsTrigger 
+                value="emails"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                📬 Logs Email
+              </TabsTrigger>
+              <TabsTrigger 
+                value="export"
+                className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
+              >
+                💾 Exportar
               </TabsTrigger>
               <TabsTrigger 
                 value="github"
                 className="data-[state=active]:bg-[#C9A227] data-[state=active]:text-black whitespace-nowrap"
               >
-                GitHub
+                🔗 GitHub
               </TabsTrigger>
             </>
           )}
         </TabsList>
+
+        <TabsContent value="dashboard">
+          <AdminDashboard />
+        </TabsContent>
 
         <TabsContent value="cases">
           <AdminCases />
