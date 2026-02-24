@@ -116,23 +116,31 @@ export default function SubmitCase() {
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (editingCaseId) {
-        await base44.entities.Case.update(editingCaseId, {
+        return await base44.entities.Case.update(editingCaseId, {
           ...form,
           status: "pending",
         });
       } else {
         const caseId = "CASE-" + Math.random().toString(36).substring(2, 6).toUpperCase() + "-2026";
-        await base44.entities.Case.create({
+        return await base44.entities.Case.create({
           ...form,
           case_id: caseId,
           status: "pending",
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: (createdCase) => {
       queryClient.invalidateQueries({ queryKey: ["myCases"] });
+      queryClient.invalidateQueries({ queryKey: ["case"] });
       setSubmitted(true);
       toast.success(editingCaseId ? "¡Caso actualizado correctamente!" : "¡Caso enviado correctamente!");
+      
+      // Redirect to case detail after brief delay
+      if (createdCase?.id && !editingCaseId) {
+        setTimeout(() => {
+          window.location.href = `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '/CaseDetail')}?id=${createdCase.id}`;
+        }, 2000);
+      }
     },
     onError: (error) => {
       console.error("Error submitting case:", error);
