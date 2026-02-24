@@ -9,12 +9,12 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
-
-
+import OnboardingTour from "@/components/OnboardingTour";
 
 export default function Home() {
   return (
     <div className="relative bg-black overflow-x-hidden">
+      <OnboardingTour />
       {/* All sections now scroll normally */}
       <HeroSlide />
       <InstitutionsSlide />
