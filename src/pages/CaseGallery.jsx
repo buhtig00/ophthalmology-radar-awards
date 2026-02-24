@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Award, Building2, MapPin, Star, Loader2, Eye } from "lucide-react";
+import { Search, Award, Star, Loader2, Eye } from "lucide-react";
+import CaseMetadataBadges from "@/components/case/CaseMetadataBadges";
 
 export default function CaseGallery() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -198,49 +199,30 @@ export default function CaseGallery() {
                 >
                   <Card className="bg-white/5 border-white/10 hover:bg-white/[0.07] hover:border-[#c9a84c]/30 transition-all h-full">
                     <CardHeader>
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex flex-wrap gap-2">
-                          {caseItem.category_name && (
-                            <Badge className="bg-[#c9a84c]/10 text-[#c9a84c] border-[#c9a84c]/20 text-xs">
-                              {caseItem.category_name}
-                            </Badge>
-                          )}
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="flex-1">
                           {avgScore && (
-                            <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">
+                            <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs mb-2">
                               <Star className="w-3 h-3 mr-1" />
-                              {avgScore.total.toFixed(1)}/40
+                              {avgScore.total.toFixed(1)}/40 pts
                             </Badge>
                           )}
                         </div>
                         <Eye className="w-4 h-4 text-gray-500 group-hover:text-[#c9a84c] transition-colors" />
                       </div>
                       
-                      <CardTitle className="text-white group-hover:text-[#c9a84c] transition-colors line-clamp-2">
+                      <CardTitle className="text-white group-hover:text-[#c9a84c] transition-colors line-clamp-2 mb-2">
                         {caseItem.title}
                       </CardTitle>
                       
-                      <CardDescription className="text-gray-400 line-clamp-3">
+                      <CardDescription className="text-gray-400 line-clamp-2 mb-3">
                         {caseItem.description}
                       </CardDescription>
+
+                      <CaseMetadataBadges caseData={caseItem} variant="compact" />
                     </CardHeader>
 
                     <CardContent className="space-y-3">
-                      {/* Location Info */}
-                      <div className="flex flex-wrap gap-3 text-xs text-gray-400">
-                        {caseItem.hospital && (
-                          <div className="flex items-center gap-1">
-                            <Building2 className="w-3 h-3" />
-                            <span className="truncate">{caseItem.hospital}</span>
-                          </div>
-                        )}
-                        {caseItem.country && (
-                          <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            <span>{caseItem.country}</span>
-                          </div>
-                        )}
-                      </div>
-
                       {/* Jury Scores Breakdown */}
                       {avgScore && (
                         <div className="pt-3 border-t border-white/5">

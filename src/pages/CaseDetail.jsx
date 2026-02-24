@@ -5,14 +5,16 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import { 
-  ArrowLeft, FileText, Calendar, Building2, MapPin, User as UserIcon, 
-  CheckCircle2, XCircle, Clock, Video, Loader2, Tag
+  ArrowLeft, FileText, CheckCircle2, XCircle, Clock, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import GitHubActivity from "../components/admin/GitHubActivity";
 import CommentSection from "../components/voting/CommentSection";
+import AdvancedVideoPlayer from "../components/case/AdvancedVideoPlayer";
+import InteractiveMediaGallery from "../components/case/InteractiveMediaGallery";
+import CaseMetadataBadges from "../components/case/CaseMetadataBadges";
 
 const STATUS_CONFIG = {
   pending: { label: "En revisión", icon: Clock, color: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20" },
@@ -83,7 +85,7 @@ export default function CaseDetail() {
         {/* Header */}
         <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
           <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-gray-500 text-sm font-mono">{caseData.case_id}</span>
                 <Badge variant="outline" className={`${status.color}`}>
@@ -98,61 +100,9 @@ export default function CaseDetail() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-white/5">
-            {caseData.category_name && (
-              <div className="flex items-center gap-3">
-                <Tag className="w-5 h-5 text-[#c9a84c]" />
-                <div>
-                  <p className="text-gray-500 text-xs">Categoría</p>
-                  <p className="text-white font-medium">{caseData.category_name}</p>
-                </div>
-              </div>
-            )}
-            {caseData.surgery_type && (
-              <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-[#c9a84c]" />
-                <div>
-                  <p className="text-gray-500 text-xs">Tipo de cirugía</p>
-                  <p className="text-white font-medium">{caseData.surgery_type}</p>
-                </div>
-              </div>
-            )}
-            {caseData.hospital && (
-              <div className="flex items-center gap-3">
-                <Building2 className="w-5 h-5 text-[#c9a84c]" />
-                <div>
-                  <p className="text-gray-500 text-xs">Hospital</p>
-                  <p className="text-white font-medium">{caseData.hospital}</p>
-                </div>
-              </div>
-            )}
-            {caseData.country && (
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-[#c9a84c]" />
-                <div>
-                  <p className="text-gray-500 text-xs">País</p>
-                  <p className="text-white font-medium">{caseData.country}</p>
-                </div>
-              </div>
-            )}
-            {caseData.specialty && (
-              <div className="flex items-center gap-3">
-                <UserIcon className="w-5 h-5 text-[#c9a84c]" />
-                <div>
-                  <p className="text-gray-500 text-xs">Especialidad</p>
-                  <p className="text-white font-medium">{caseData.specialty}</p>
-                </div>
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-[#c9a84c]" />
-              <div>
-                <p className="text-gray-500 text-xs">Fecha de envío</p>
-                <p className="text-white font-medium">
-                  {format(new Date(caseData.created_date), "d 'de' MMMM, yyyy")}
-                </p>
-              </div>
-            </div>
+          {/* Metadata Badges */}
+          <div className="pt-4 border-t border-white/5">
+            <CaseMetadataBadges caseData={caseData} variant="detailed" />
           </div>
         </div>
 
@@ -164,16 +114,14 @@ export default function CaseDetail() {
         {/* Video */}
         {caseData.video_url && (
           <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-            <h2 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-              <Video className="w-5 h-5 text-[#c9a84c]" />
-              Video del caso
-            </h2>
-            <div className="rounded-xl overflow-hidden bg-black">
-              <video controls className="w-full" style={{ maxHeight: "500px" }}>
-                <source src={caseData.video_url} />
-                Tu navegador no soporta el elemento de video.
-              </video>
-            </div>
+            <AdvancedVideoPlayer src={caseData.video_url} />
+          </div>
+        )}
+
+        {/* Attachments Gallery */}
+        {caseData.attachment_urls && caseData.attachment_urls.length > 0 && (
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
+            <InteractiveMediaGallery attachments={caseData.attachment_urls} />
           </div>
         )}
 
