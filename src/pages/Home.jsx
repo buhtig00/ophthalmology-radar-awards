@@ -48,9 +48,6 @@ export default function Home() {
     </div>
   );
 }
-
-// Slide 2: Problema
-function ProblemaSlide() {
   const problems = [
     {
       number: "01",
