@@ -316,61 +316,63 @@ export default function CaseGallery() {
                       )}
 
                       <CardHeader className="pb-3">
-                        {!caseItem.video_url && (
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <div className="flex gap-2">
-                              {avgScore && (
-                                <Badge className="bg-green-500/10 text-green-400 border-green-500/20 text-xs">
-                                  <Star className="w-3 h-3 mr-1" />
-                                  {avgScore.total.toFixed(1)}
-                                </Badge>
-                              )}
-                              {caseItem.vote_count > 0 && (
-                                <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs">
-                                  <TrendingUp className="w-3 h-3 mr-1" />
-                                  {caseItem.vote_count}
-                                </Badge>
-                              )}
-                            </div>
-                            <Eye className="w-4 h-4 text-gray-500 group-hover:text-[#c9a84c] transition-colors" />
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-white group-hover:text-[#c9a84c] transition-colors line-clamp-2 text-lg mb-2">
+                              {caseItem.title}
+                            </CardTitle>
+                            
+                            {caseItem.description && (
+                              <CardDescription className="text-gray-400 text-sm leading-relaxed line-clamp-2">
+                                {caseItem.description}
+                              </CardDescription>
+                            )}
                           </div>
-                        )}
-                        
-                        <CardTitle className="text-white group-hover:text-[#c9a84c] transition-colors line-clamp-2 text-lg">
-                          {caseItem.title}
-                        </CardTitle>
-                        
-                        <CardDescription className="text-gray-400 line-clamp-2 text-sm leading-relaxed">
-                          {caseItem.description}
-                        </CardDescription>
+                          
+                          {!caseItem.video_url && avgScore && (
+                            <Badge className="bg-[#C9A227]/10 text-[#C9A227] border-[#C9A227]/30 shrink-0">
+                              {avgScore.total.toFixed(1)}
+                            </Badge>
+                          )}
+                        </div>
                       </CardHeader>
 
-                      <CardContent className="pt-0 space-y-3">
+                      <CardContent className="pt-0 space-y-4">
+                        {/* Metadata Badges */}
                         <CaseMetadataBadges caseData={caseItem} variant="compact" />
 
-                        {/* Jury Scores */}
+                        {/* Stats Row */}
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                          {caseItem.vote_count > 0 && (
+                            <div className="flex items-center gap-1.5">
+                              <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
+                              <span>{caseItem.vote_count} votos</span>
+                            </div>
+                          )}
+                          {avgScore && (
+                            <div className="flex items-center gap-1.5">
+                              <Star className="w-3.5 h-3.5 text-[#C9A227]" />
+                              <span>{avgScore.juryCount} evaluaciones</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Jury Scores - More Compact */}
                         {avgScore && (
                           <div className="pt-3 border-t border-white/5">
-                            <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                              <Award className="w-3 h-3" />
-                              Evaluado por {avgScore.juryCount} {avgScore.juryCount === 1 ? 'jurado' : 'jurados'}
-                            </div>
-                            <div className="space-y-1.5">
+                            <div className="grid grid-cols-2 gap-3">
                               {[
-                                { label: "Innovación", value: avgScore.innovation, color: "text-purple-400" },
-                                { label: "Impacto", value: avgScore.clinical, color: "text-green-400" },
-                                { label: "Presentación", value: avgScore.presentation, color: "text-blue-400" },
-                                { label: "Docente", value: avgScore.teaching, color: "text-orange-400" }
+                                { label: "Innovación", value: avgScore.innovation, icon: "💡" },
+                                { label: "Impacto", value: avgScore.clinical, icon: "⚡" },
+                                { label: "Presentación", value: avgScore.presentation, icon: "🎨" },
+                                { label: "Docente", value: avgScore.teaching, icon: "📚" }
                               ].map(metric => (
-                                <div key={metric.label} className="flex items-center gap-2">
-                                  <span className="text-xs text-gray-500 w-24">{metric.label}</span>
-                                  <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                    <div 
-                                      className={`h-full ${metric.color.replace('text-', 'bg-')} rounded-full transition-all`}
-                                      style={{ width: `${(metric.value / 10) * 100}%` }}
-                                    />
+                                <div key={metric.label} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/[0.02]">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-sm">{metric.icon}</span>
+                                    <span className="text-xs text-gray-400">{metric.label}</span>
                                   </div>
-                                  <span className={`text-xs font-semibold ${metric.color} w-8 text-right`}>
+                                  <span className="text-sm font-bold text-[#C9A227]">
                                     {metric.value.toFixed(1)}
                                   </span>
                                 </div>
