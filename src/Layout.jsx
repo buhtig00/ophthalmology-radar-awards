@@ -321,6 +321,42 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="lg:ml-64 bg-[#0a0e1a] border-t border-white/5 py-8">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            <div>
+              <h3 className="text-white font-semibold mb-3">Ophthalmology Radar Awards</h3>
+              <p className="text-gray-500 text-sm">
+                Reconociendo la excelencia en cirugía oftalmológica a nivel mundial.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-3 text-sm">Enlaces</h4>
+              <div className="space-y-2">
+                <a href={createPageUrl("PrivacyPolicy")} className="block text-gray-500 hover:text-[#C9A227] text-sm transition-colors">
+                  Política de Privacidad
+                </a>
+                <a href={createPageUrl("TermsOfService")} className="block text-gray-500 hover:text-[#C9A227] text-sm transition-colors">
+                  Términos de Servicio
+                </a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-3 text-sm">Contacto</h4>
+              <p className="text-gray-500 text-sm">
+                <a href="mailto:info@ophthalmologyradar.com" className="hover:text-[#C9A227] transition-colors">
+                  info@ophthalmologyradar.com
+                </a>
+              </p>
+            </div>
+          </div>
+          <div className="pt-6 border-t border-white/5 text-center text-gray-600 text-sm">
+            © {new Date().getFullYear()} Ophthalmology Radar. Todos los derechos reservados.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

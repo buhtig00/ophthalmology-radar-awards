@@ -62,6 +62,8 @@ import Profile from './pages/Profile';
 import Rankings from './pages/Rankings';
 import SubmitCase from './pages/SubmitCase';
 import Voting from './pages/Voting';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +83,8 @@ export const PAGES = {
     "Rankings": Rankings,
     "SubmitCase": SubmitCase,
     "Voting": Voting,
+    "PrivacyPolicy": PrivacyPolicy,
+    "TermsOfService": TermsOfService,
 }
 
 export const pagesConfig = {
