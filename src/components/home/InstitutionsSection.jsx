@@ -59,21 +59,27 @@ const InstitutionsSection = React.memo(() => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-center justify-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
               >
-                {partner.logo_url ? (
-                  <img 
-                    src={partner.logo_url} 
-                    alt={partner.name}
-                    className="w-full h-16 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-                    loading="lazy"
-                    title={partner.name}
-                  />
-                ) : (
-                  <div className="text-center">
-                    <div className="text-[#C9A227] font-bold text-xs">{partner.name}</div>
-                  </div>
-                )}
+                <a
+                  href={partner.website_url || '#'}
+                  target={partner.website_url ? "_blank" : "_self"}
+                  rel="noopener noreferrer"
+                  className={`flex items-center justify-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group block h-full ${!partner.website_url ? 'cursor-default' : 'cursor-pointer'}`}
+                >
+                  {partner.logo_url ? (
+                    <img 
+                      src={partner.logo_url} 
+                      alt={partner.name}
+                      className="w-full h-16 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+                      loading="lazy"
+                      title={partner.name}
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="text-[#C9A227] font-bold text-xs">{partner.name}</div>
+                    </div>
+                  )}
+                </a>
               </motion.div>
             ))}
           </div>
