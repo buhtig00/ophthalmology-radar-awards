@@ -113,7 +113,7 @@ export default function MyCases() {
                         <StatusIcon className="w-3 h-3 mr-1" />
                         {status.label}
                       </Badge>
-                      {c.status === "finalist" && (
+                      {(c.status === "approved" || c.status === "finalist") && c.vote_count > 0 && (
                         <Badge className="bg-[#C9A227]/20 text-[#C9A227] text-xs">
                           <TrendingUp className="w-3 h-3 mr-1" />
                           {c.vote_count || 0} votos

@@ -35,8 +35,12 @@ export default function Voting() {
   });
 
   const { data: cases = [], isLoading: casesLoading } = useQuery({
-    queryKey: ["finalistCases"],
-    queryFn: () => base44.entities.Case.filter({ status: "approved" }),
+    queryKey: ["votingCases"],
+    queryFn: async () => {
+      const approved = await base44.entities.Case.filter({ status: "approved" });
+      const finalists = await base44.entities.Case.filter({ status: "finalist" });
+      return [...approved, ...finalists];
+    },
   });
 
   const { data: myVotes = [] } = useQuery({

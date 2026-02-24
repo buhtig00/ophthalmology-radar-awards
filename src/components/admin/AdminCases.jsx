@@ -133,7 +133,11 @@ export default function AdminCases() {
   });
 
   const markAsFinalist = (c) => {
-    const shouldCreateIssue = githubConfig.projectId && githubConfig.repo && !c.github_issue_number;
+    // Check if case was already approved for voting
+    const isAlreadyVotable = c.status === "approved" || c.status === "finalist";
+    
+    const shouldCreateIssue = githubConfig.projectId && githubConfig.repo && !c.github_issue_number && isAlreadyVotable;
+    
     updateMutation.mutate({ 
       id: c.id, 
       data: { 
