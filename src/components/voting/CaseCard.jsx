@@ -8,6 +8,7 @@ import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import VideoPreviewCard from "@/components/case/VideoPreviewCard";
 
 const CaseCard = memo(function CaseCard({ caseItem, hasVoted, isSelected, onVote, disabled, showVoteCount }) {
   const queryClient = useQueryClient();
@@ -73,7 +74,27 @@ const CaseCard = memo(function CaseCard({ caseItem, hasVoted, isSelected, onVote
       className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl overflow-hidden hover:border-[#C9A227]/30 transition-all group"
     >
       {/* Video Preview */}
-      {caseItem.video_url && (
+      {caseItem.video_url ? (
+        <div className="relative">
+          <VideoPreviewCard
+            videoUrl={caseItem.video_url}
+            title={caseItem.title}
+            onClick={() => window.location.href = `${createPageUrl("CaseDetail")}?id=${caseItem.id}`}
+          />
+          {showVoteCount && (
+            <Badge className="absolute top-3 right-3 bg-black/70 backdrop-blur-xl border-[#C9A227]/30 text-[#C9A227] flex items-center gap-1 z-10">
+              <TrendingUp className="w-3 h-3" />
+              {realTimeVotes}
+            </Badge>
+          )}
+          <button
+            onClick={handleFavoriteClick}
+            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/70 backdrop-blur-xl border border-white/10 flex items-center justify-center hover:bg-black/90 transition-all group/fav z-10"
+          >
+            <Heart className={`w-4 h-4 transition-all ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover/fav:text-red-400'}`} />
+          </button>
+        </div>
+      ) : (
         <div className="aspect-video bg-gradient-to-br from-[#C9A227]/10 to-transparent relative overflow-hidden">
           <Video className="absolute inset-0 m-auto w-12 h-12 text-[#C9A227]/50" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -83,12 +104,6 @@ const CaseCard = memo(function CaseCard({ caseItem, hasVoted, isSelected, onVote
               {realTimeVotes}
             </Badge>
           )}
-          <button
-            onClick={handleFavoriteClick}
-            className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-center hover:bg-black/80 transition-all group/fav"
-          >
-            <Heart className={`w-4 h-4 transition-all ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400 group-hover/fav:text-red-400'}`} />
-          </button>
         </div>
       )}
 
