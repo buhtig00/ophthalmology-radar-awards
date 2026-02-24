@@ -274,7 +274,7 @@ export default function CaseGallery() {
             </Card>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredCases.map((caseItem, idx) => {
               const avgScore = caseAverages[caseItem.id];
               
@@ -298,89 +298,77 @@ export default function CaseGallery() {
                             title={caseItem.title}
                             onClick={() => {}}
                           />
-                          <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                          <div className="absolute top-3 right-3 z-10">
                             {avgScore && (
-                              <Badge className="bg-black/70 backdrop-blur-xl text-[#C9A227] border-[#C9A227]/30 flex items-center gap-1">
-                                <Star className="w-3 h-3" />
+                              <Badge className="bg-black/80 backdrop-blur-xl text-[#C9A227] border-[#C9A227]/50 font-bold">
+                                <Star className="w-3 h-3 mr-1 fill-current" />
                                 {avgScore.total.toFixed(1)}
-                              </Badge>
-                            )}
-                            {caseItem.vote_count > 0 && (
-                              <Badge className="bg-black/70 backdrop-blur-xl text-blue-400 border-blue-400/30 flex items-center gap-1">
-                                <TrendingUp className="w-3 h-3" />
-                                {caseItem.vote_count}
                               </Badge>
                             )}
                           </div>
                         </div>
                       )}
 
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-white group-hover:text-[#c9a84c] transition-colors line-clamp-2 text-lg mb-2">
-                              {caseItem.title}
-                            </CardTitle>
-                            
-                            {caseItem.description && (
-                              <CardDescription className="text-gray-400 text-sm leading-relaxed line-clamp-2">
-                                {caseItem.description}
-                              </CardDescription>
-                            )}
-                          </div>
+                      <div className="p-5">
+                        {/* Header */}
+                        <div className="mb-4">
+                          <h3 className="text-white font-bold text-lg mb-2 line-clamp-2 group-hover:text-[#c9a84c] transition-colors leading-tight">
+                            {caseItem.title}
+                          </h3>
                           
-                          {!caseItem.video_url && avgScore && (
-                            <Badge className="bg-[#C9A227]/10 text-[#C9A227] border-[#C9A227]/30 shrink-0">
-                              {avgScore.total.toFixed(1)}
+                          {caseItem.category_name && (
+                            <Badge variant="outline" className="border-[#C9A227]/30 text-[#C9A227] text-xs">
+                              {caseItem.category_name}
                             </Badge>
                           )}
                         </div>
-                      </CardHeader>
 
-                      <CardContent className="pt-0 space-y-4">
-                        {/* Metadata Badges */}
-                        <CaseMetadataBadges caseData={caseItem} variant="compact" />
+                        {/* Description */}
+                        {caseItem.description && (
+                          <p className="text-gray-400 text-sm mb-4 line-clamp-2 leading-relaxed">
+                            {caseItem.description}
+                          </p>
+                        )}
 
-                        {/* Stats Row */}
-                        <div className="flex items-center gap-4 text-xs text-gray-400">
-                          {caseItem.vote_count > 0 && (
-                            <div className="flex items-center gap-1.5">
-                              <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
-                              <span>{caseItem.vote_count} votos</span>
+                        {/* Metadata */}
+                        <div className="space-y-2 text-sm text-gray-400 mb-4">
+                          {caseItem.hospital && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-[#C9A227] shrink-0">🏥</span>
+                              <span className="line-clamp-1">{caseItem.hospital}</span>
                             </div>
                           )}
-                          {avgScore && (
-                            <div className="flex items-center gap-1.5">
-                              <Star className="w-3.5 h-3.5 text-[#C9A227]" />
-                              <span>{avgScore.juryCount} evaluaciones</span>
+                          {caseItem.country && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-[#C9A227]">📍</span>
+                              <span>{caseItem.country}</span>
                             </div>
                           )}
                         </div>
 
-                        {/* Jury Scores - More Compact */}
-                        {avgScore && (
-                          <div className="pt-3 border-t border-white/5">
-                            <div className="grid grid-cols-2 gap-3">
-                              {[
-                                { label: "Innovación", value: avgScore.innovation, icon: "💡" },
-                                { label: "Impacto", value: avgScore.clinical, icon: "⚡" },
-                                { label: "Presentación", value: avgScore.presentation, icon: "🎨" },
-                                { label: "Docente", value: avgScore.teaching, icon: "📚" }
-                              ].map(metric => (
-                                <div key={metric.label} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/[0.02]">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-sm">{metric.icon}</span>
-                                    <span className="text-xs text-gray-400">{metric.label}</span>
-                                  </div>
-                                  <span className="text-sm font-bold text-[#C9A227]">
-                                    {metric.value.toFixed(1)}
-                                  </span>
-                                </div>
-                              ))}
+                        {/* Stats */}
+                        {(avgScore || caseItem.vote_count > 0) && (
+                          <div className="pt-4 border-t border-white/10 space-y-3">
+                            {!caseItem.video_url && avgScore && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-500">Puntuación Total</span>
+                                <span className="text-lg font-bold text-[#C9A227]">
+                                  {avgScore.total.toFixed(1)}/40
+                                </span>
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              {avgScore && (
+                                <span>{avgScore.juryCount} evaluaciones</span>
+                              )}
+                              {caseItem.vote_count > 0 && (
+                                <span>{caseItem.vote_count} votos</span>
+                              )}
                             </div>
                           </div>
                         )}
-                      </CardContent>
+                      </div>
                     </Card>
                   </Link>
                 </motion.div>
