@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Award, ArrowRight, Calendar, Video, Users, Trophy, 
   Target, Globe, CheckCircle, Shield, Eye, Upload,
-  Play, MessageSquare, ChevronRight, Star, Zap
+  Play, MessageSquare, ChevronRight, Star, Zap, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { base44 } from "@/api/base44Client";
