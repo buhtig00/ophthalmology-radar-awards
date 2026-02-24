@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
+import { ROLES, getRoleDisplayName, getRoleBadgeColor } from "@/components/lib/permissions";
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
@@ -125,8 +126,10 @@ export default function AdminUsers() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos los roles</SelectItem>
-            <SelectItem value="admin">Admin</SelectItem>
-            <SelectItem value="user">Usuario</SelectItem>
+            <SelectItem value={ROLES.ADMIN}>Administrador</SelectItem>
+            <SelectItem value={ROLES.MODERATOR}>Moderador</SelectItem>
+            <SelectItem value={ROLES.JURY}>Jurado</SelectItem>
+            <SelectItem value={ROLES.USER}>Usuario</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -152,14 +155,10 @@ export default function AdminUsers() {
                       </p>
                       <Badge
                         variant="outline"
-                        className={
-                          user.role === "admin"
-                            ? "bg-[#c9a84c]/10 border-[#c9a84c]/20 text-[#c9a84c]"
-                            : "bg-white/5 border-white/10 text-gray-400"
-                        }
+                        className={getRoleBadgeColor(user.role)}
                       >
                         <Shield className="w-3 h-3 mr-1" />
-                        {user.role}
+                        {getRoleDisplayName(user.role)}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
@@ -190,8 +189,10 @@ export default function AdminUsers() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="user">Usuario</SelectItem>
+                    <SelectItem value={ROLES.ADMIN}>Administrador</SelectItem>
+                    <SelectItem value={ROLES.MODERATOR}>Moderador</SelectItem>
+                    <SelectItem value={ROLES.JURY}>Jurado</SelectItem>
+                    <SelectItem value={ROLES.USER}>Usuario</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -231,8 +232,10 @@ export default function AdminUsers() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">Usuario</SelectItem>
+                  <SelectItem value={ROLES.ADMIN}>Administrador</SelectItem>
+                  <SelectItem value={ROLES.MODERATOR}>Moderador</SelectItem>
+                  <SelectItem value={ROLES.JURY}>Jurado</SelectItem>
+                  <SelectItem value={ROLES.USER}>Usuario</SelectItem>
                 </SelectContent>
               </Select>
             </div>
