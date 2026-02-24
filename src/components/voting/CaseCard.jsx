@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -168,4 +168,6 @@ const CaseCard = memo(function CaseCard({ caseItem, hasVoted, isSelected, onVote
       </div>
     </motion.div>
   );
-}
+});
+
+export default CaseCard;

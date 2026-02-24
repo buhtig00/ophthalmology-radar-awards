@@ -27,6 +27,7 @@ export default function Voting() {
       const configs = await base44.entities.EventConfig.list();
       return configs[0];
     },
+    staleTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const { data: categories = [] } = useQuery({
