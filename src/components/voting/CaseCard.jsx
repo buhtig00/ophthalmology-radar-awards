@@ -9,7 +9,7 @@ import { base44 } from "@/api/base44Client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export default function CaseCard({ caseItem, hasVoted, isSelected, onVote, disabled, showVoteCount }) {
+const CaseCard = memo(function CaseCard({ caseItem, hasVoted, isSelected, onVote, disabled, showVoteCount }) {
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [realTimeVotes, setRealTimeVotes] = useState(caseItem.vote_count || 0);

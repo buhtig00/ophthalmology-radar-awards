@@ -1,233 +1,51 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Award, ArrowRight, Calendar, Video, Users, Trophy, 
-  Target, Globe, CheckCircle, Shield, Eye, Upload,
-  Play, MessageSquare, ChevronRight, Star, Zap, Clock
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { base44 } from "@/api/base44Client";
+import React, { lazy, Suspense } from "react";
 import OnboardingTour from "@/components/OnboardingTour";
+
+// Lazy load sections for better performance
+const HeroSection = lazy(() => import("@/components/home/HeroSection"));
+const InstitutionsSection = lazy(() => import("@/components/home/InstitutionsSection"));
+const ProblemaSlide = lazy(() => import("@/components/home/ProblemaSlide"));
+const VisionSlide = lazy(() => import("@/components/home/VisionSlide"));
+const TerritorioSlide = lazy(() => import("@/components/home/TerritorioSlide"));
+const ProcesoSlide = lazy(() => import("@/components/home/ProcesoSlide"));
+const EvaluacionSlide = lazy(() => import("@/components/home/EvaluacionSlide"));
+const CategoriasSlide = lazy(() => import("@/components/home/CategoriasSlide"));
+const FinalistasSlide = lazy(() => import("@/components/home/FinalistasSlide"));
+const JuradoSlide = lazy(() => import("@/components/home/JuradoSlide"));
+const StreamingSlide = lazy(() => import("@/components/home/StreamingSlide"));
+const PartnersSlide = lazy(() => import("@/components/home/PartnersSlide"));
+const FAQSlide = lazy(() => import("@/components/home/FAQSlide"));
+const CTASlide = lazy(() => import("@/components/home/CTASlide"));
+
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="w-8 h-8 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
+  </div>
+);
 
 export default function Home() {
   return (
     <div className="relative bg-black overflow-x-hidden">
       <OnboardingTour />
-      {/* All sections now scroll normally */}
-      <HeroSlide />
-      <InstitutionsSlide />
-      <ProblemaSlide />
-      <VisionSlide />
-      <TerritorioSlide />
-      <ProcesoSlide />
-      <EvaluacionSlide />
-      <CategoriasSlide />
-      <FinalistasSlide />
-      <JuradoSlide />
-      <StreamingSlide />
-      <PartnersSlide />
-      <FAQSlide />
-      <CTASlide />
+      <Suspense fallback={<LoadingSpinner />}>
+        <HeroSection />
+      </Suspense>
+      <Suspense fallback={null}>
+        <InstitutionsSection />
+        <ProblemaSlide />
+        <VisionSlide />
+        <TerritorioSlide />
+        <ProcesoSlide />
+        <EvaluacionSlide />
+        <CategoriasSlide />
+        <FinalistasSlide />
+        <JuradoSlide />
+        <StreamingSlide />
+        <PartnersSlide />
+        <FAQSlide />
+        <CTASlide />
+      </Suspense>
     </div>
-  );
-}
-
-// Slide 1: Hero
-function HeroSlide() {
-  return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden py-20">
-      {/* Background with cinematic image */}
-      <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1485796826113-174aa68fd81b?w=1920&h=1080&fit=crop&q=80)',
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-black/90" />
-        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[#C9A227]/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10 max-w-6xl mx-auto px-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-        >
-          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-[#C9A227]/30 bg-[#C9A227]/5 backdrop-blur-xl mb-8">
-            <Calendar className="w-4 h-4 text-[#C9A227]" />
-            <span className="text-[#C9A227] font-medium">15 Octubre 2026 • Madrid</span>
-          </div>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="text-6xl md:text-8xl font-bold text-white leading-[0.95] tracking-tight mb-8"
-        >
-          La noche donde la
-          <br />
-          <span className="bg-gradient-to-r from-[#C9A227] via-[#E8C547] to-[#C9A227] bg-clip-text text-transparent">
-            oftalmología se celebra
-          </span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="text-xl text-gray-300 max-w-3xl mx-auto mb-12 leading-relaxed"
-        >
-          Los primeros Óscars de la cirugía oftalmológica. Reconociendo la excelencia, 
-          la innovación y el impacto real en la visión de los pacientes.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
-        >
-          <Link to={createPageUrl("SubmitCase")}>
-            <Button size="lg" className="bg-[#C9A227] hover:bg-[#E8C547] text-black font-semibold px-10 h-14 text-lg gap-3 group shadow-2xl shadow-[#C9A227]/20">
-              <Upload className="w-5 h-5" />
-              Enviar Caso
-              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </Link>
-          <Link to={createPageUrl("Categories")}>
-            <Button size="lg" variant="outline" className="border-[#C9A227]/30 text-white hover:bg-[#C9A227]/10 hover:text-white backdrop-blur-xl px-10 h-14 text-lg bg-black/20">
-              Explorar Categorías
-            </Button>
-          </Link>
-        </motion.div>
-
-        {/* Feature Highlights */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
-        >
-          {[
-            { icon: Video, label: "Proyección de cirugías finalistas" },
-            { icon: Users, label: "Debate clínico en vivo" },
-            { icon: Trophy, label: "Entrega de premios" },
-            { icon: MessageSquare, label: "Networking exclusivo" },
-          ].map((item, i) => (
-            <div key={i} className="p-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-xl">
-              <item.icon className="w-6 h-6 text-[#C9A227] mx-auto mb-3" />
-              <p className="text-sm text-gray-400">{item.label}</p>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-
-    </section>
-  );
-}
-
-// Institutions Section
-function InstitutionsSlide() {
-  const [partners, setPartners] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    base44.entities.Partner.filter({ is_active: true })
-      .then(data => {
-        setPartners(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setPartners([]);
-        setLoading(false);
-      });
-  }, []);
-
-  return (
-    <section className="py-16 sm:py-24 px-4 sm:px-8 bg-gradient-to-b from-black to-[#0a0a0a] border-y border-white/5">
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <p className="text-[#C9A227] text-sm font-semibold tracking-wider uppercase mb-3">
-            Respaldado por líderes en oftalmología
-          </p>
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
-            Instituciones Representadas
-          </h3>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Los mejores hospitales y centros de referencia de España y Portugal participan en los premios
-          </p>
-        </motion.div>
-
-        {/* Logos Grid */}
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#C9A227] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 sm:gap-8">
-            {partners.length > 0 ? (
-              partners.map((partner, i) => (
-                <motion.div
-                  key={partner.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex items-center justify-center p-6 rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-[#C9A227]/20 transition-all group"
-                >
-                  {partner.logo_url ? (
-                    <img 
-                      src={partner.logo_url} 
-                      alt={partner.name}
-                      className="w-full h-20 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
-                      title={partner.name}
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <div className="text-[#C9A227] font-bold text-sm">{partner.name}</div>
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            ) : (
-              <div className="col-span-full text-center text-gray-500 py-8">
-                <p className="mb-2">Cargando instituciones...</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Stats bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6"
-        >
-          {[
-            { value: "50+", label: "Centros hospitalarios" },
-            { value: "1,200+", label: "Oftalmólogos" },
-            { value: "2", label: "Países" },
-            { value: "22", label: "Categorías" }
-          ].map((stat, i) => (
-            <div key={i} className="text-center p-6 rounded-2xl border border-white/5 bg-white/[0.01]">
-              <div className="text-3xl sm:text-4xl font-bold text-[#C9A227] mb-2">{stat.value}</div>
-              <div className="text-sm text-gray-500">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
   );
 }
 
